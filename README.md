@@ -21,7 +21,7 @@
 | **Nombre del proyecto** | COLMENAPP |
 | **Descripción breve** | Aplicación web PWA para la gestión profesional de apiarios y colmenas, con funcionamiento offline-first, diseñada para apicultores con 100+ colmenas que necesitan registrar datos de campo de manera eficiente |
 | **URL del proyecto** | *Pendiente de despliegue* |
-| **URL del repositorio** | *Pendiente de creación* |
+| **URL del repositorio** | https://github.com/CarlosSJM/COLMENAPP |
 
 ### Ramas del proyecto
 
@@ -766,13 +766,31 @@ Definir el schema completo de Prisma con todas las entidades, relaciones y ejecu
 
 ## 7. Pull Requests
 
-*Se documentarán durante el desarrollo en Entregas 2 y 3.*
+### PR #1: Documentación técnica - Entrega 1
+
+| Campo | Valor |
+|-------|-------|
+| **URL** | https://github.com/CarlosSJM/COLMENAPP/pull/1 |
+| **Rama origen** | `feature-entrega1-CSM` |
+| **Rama destino** | `main` |
+| **Estado** | Entrega 1 - Documentación técnica |
+
+**Cambios incluidos:**
+- `README.md`: Documentación completa del proyecto (secciones 0-7)
+- `prompts.md`: Registro de prompts de IA utilizados
+- `docs/`: Documentación técnica adicional
+
+**Descripción:**
+Primera entrega del proyecto final. Incluye toda la documentación técnica:
+arquitectura, modelo de datos, API spec, historias de usuario y tickets de trabajo.
+
+---
 
 | PR | Descripción | Estado |
 |----|-------------|--------|
-| PR #1 | *Pendiente* | - |
-| PR #2 | *Pendiente* | - |
-| PR #3 | *Pendiente* | - |
+| PR #1 | Documentación técnica (Entrega 1) | ✅ Completado |
+| PR #2 | Código funcional (Entrega 2) | ⏳ Pendiente |
+| PR #3 | Entrega final (Entrega 3) | ⏳ Pendiente |
 
 ---
 

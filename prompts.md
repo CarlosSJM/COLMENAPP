@@ -147,7 +147,22 @@ antes de tomar una decisión
 
 ## 7. Pull Requests
 
-*Se documentarán los PRs principales durante el desarrollo*
+### PR #1: Documentación técnica (Entrega 1)
+
+**Contexto:** Primera entrega del proyecto final del máster AI4Devs.
+
+**URL:** https://github.com/CarlosSJM/COLMENAPP/pull/1
+
+**Contenido:**
+- README.md con secciones 0-7 completas
+- prompts.md con registro de uso de IA
+- Documentación técnica en /docs
+
+**Proceso con IA:**
+- Análisis de documento semilla y definición de MVP
+- Generación de diagramas Mermaid (arquitectura, ER, deployment)
+- Redacción de historias de usuario y tickets de trabajo
+- Validación iterativa punto por punto con el usuario
 
 ---
 
