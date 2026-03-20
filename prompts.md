@@ -2,13 +2,15 @@
 
 ## Índice
 
-1. [Descripción general del producto](#1-descripción-general-del-producto)
-2. [Arquitectura del sistema](#2-arquitectura-del-sistema)
-3. [Modelo de datos](#3-modelo-de-datos)
-4. [Especificación de la API](#4-especificación-de-la-api)
-5. [Historias de usuario](#5-historias-de-usuario)
-6. [Tickets de trabajo](#6-tickets-de-trabajo)
-7. [Pull requests](#7-pull-requests)
+1. [Descripción general del producto](#1-descripción-general-del-producto) (3 prompts)
+2. [Arquitectura del sistema](#2-arquitectura-del-sistema) (3 prompts)
+3. [Diseño UI/UX](#3-diseño-uiux) (4 prompts)
+4. [Modelo de datos](#4-modelo-de-datos) (2 prompts)
+5. [Infraestructura y entorno](#5-infraestructura-y-entorno) (1 prompt)
+6. [Documentación](#6-documentación) (1 prompt)
+7. [Historias de usuario](#7-historias-de-usuario) (pendiente)
+8. [Tickets de trabajo](#8-tickets-de-trabajo) (pendiente)
+9. [Pull requests](#9-pull-requests)
 
 ---
 
@@ -121,31 +123,161 @@ antes de tomar una decisión
 
 ---
 
-## 3. Modelo de Datos
+## 3. Diseño UI/UX
+
+### Prompt 1: Análisis de diseños Figma vs documentación
+
+**Contexto:** Se creó un primer borrador en Figma con Figma AI y se exportó como código React. Se necesitaba comparar con la documentación técnica para identificar diferencias y tomar decisiones.
+
+```
+ahora quiero hacer los diseños para ello hice un borrador en figma, con un prompt general
+lo he descargado quiero que lo compares con la documentacion que tenemos primeramente...
+```
+
+**Resultado clave:**
+> Se identificaron 8 puntos de divergencia entre el diseño de Figma y la documentación. Análisis de componentes exportados: Dashboard.tsx, Hives.tsx, Inspections.tsx, Production.tsx, mockData.ts.
+
+**Impacto:** Base para la revisión punto por punto de todo el diseño del MVP.
+
+---
+
+### Prompt 2: Decisiones de diseño punto por punto (9 puntos)
+
+**Contexto:** Revisión iterativa comparando Figma con documentación. Cada punto se discutió y aprobó individualmente.
+
+```
+sí, vamos punto por punto
+```
+
+**Decisiones tomadas (9 puntos):**
+
+| Punto | Decisión | Detalle |
+|-------|----------|---------|
+| 1. Login/Registro | AGREGAR | 3 pantallas de autenticación |
+| 2. Apiarios | AGREGAR (Opción B) | Navegación jerárquica, colmenas dentro de apiario |
+| 3. Colmenas | MODIFICAR | Combinar campos, status active/inactive/quarantine/lost |
+| 4. Inspecciones | COMBINAR | Doc (varroa, tratamiento) + Figma (queen_seen, brood_pattern, temperament) |
+| 5. Dashboard | SIMPLIFICAR | 4 cards + 2 gráficos, sin producción |
+| 6. Producción | INCLUIR | Mantener del Figma original |
+| 7. Tareas | INCLUIR | Lista con filtros, prioridades, vinculación a colmena |
+| 8. Offline/Sync UI | AGREGAR | Badges Online/Offline + pendientes sync en header |
+| 9. QR Scanner | INCLUIR | FAB + modal QR + impresión |
+
+**Impacto:** Definió completamente las 9 pantallas/features del MVP y sus modelos de datos.
+
+---
+
+### Prompt 3: Generación de prompt para Figma AI
+
+**Contexto:** Con todas las decisiones tomadas, se creó un prompt completo para actualizar los diseños en Figma AI.
+
+```
+[Generado automáticamente tras completar los 9 puntos de decisión]
+```
+
+**Resultado clave:**
+> Prompt detallado de 9 secciones para Figma AI con todas las modificaciones necesarias. Guardado en `docs/design/FIGMA_PROMPT.md`.
+
+**Impacto:** Permitió regenerar los diseños de Figma alineados al 100% con los requisitos.
+
+---
+
+### Prompt 4: Validación de diseños actualizados
+
+**Contexto:** Se actualizaron los diseños en Figma con el prompt generado y se exportaron nuevamente. Se necesitaba verificar cumplimiento.
+
+```
+en el directorio /Colmenapp Bee Hive Manager-nueva/ estan los nuevos estilos que
+desarrollamos revisalos, y verifica que cumplen nuestros requerimientos para el proyecto
+```
+
+**Resultado clave:**
+> Validación componente por componente: 9/9 categorías al 100%. Se identificaron diferencias menores (enums en español vs inglés, campos denormalizados) que se resolvieron.
+
+**Impacto:** Diseño final validado y listo para implementación.
+
+---
+
+## 4. Modelo de Datos
+
+### Prompt 1: Decisión de idioma en enums
+
+**Contexto:** Los diseños de Figma usaban enums en español (Saludable, Comprada) mientras la documentación los tenía en inglés (healthy, purchased).
+
+```
+ahora comparemos si hay novedades, para actualizar la documentacion
+```
+
+**Resultado clave:**
+> Decisión: inglés en BD, español en UI. Se documentó tabla completa de mapeo de 7 enums (28 valores). Se actualizaron modelos con campos denormalizados (_name) y modelo User.
+
+**Impacto:** Convención clara para todo el desarrollo.
+
+---
+
+### Prompt 2: Creación del schema de Prisma
+
+**Contexto:** Con los modelos de datos finalizados, crear el schema de base de datos.
+
+```
+ahora creemos el schema de prisma
+```
+
+**Resultado clave:**
+> Schema Prisma completo con 6 modelos, 7 enums, relaciones con CASCADE/SET NULL, índices de performance. Archivo: `backend/prisma/schema.prisma`.
+
+**Impacto:** Base de datos lista para migración inicial.
+
+---
+
+## 5. Infraestructura y Entorno
+
+### Prompt 1: Setup inicial del proyecto
+
+**Contexto:** Configurar estructura base del proyecto para Entrega 2.
+
+```
+empecemos con la entrega 2, pero hagamos una aproximacion de lo que necesitamos antes
+```
+
+**Resultado clave:**
+> docker-compose.yml (PostgreSQL 16), .env.example, .gitignore, estructura backend/ y frontend/ con READMEs.
+
+**Impacto:** Entorno de desarrollo local listo.
+
+---
+
+## 6. Documentación
+
+### Prompt 1: Organización de documentación en subdirectorios
+
+**Contexto:** Toda la documentación estaba dispersa. Se necesitaba estructura organizada.
+
+```
+documenta tanto en front como en back los pasos que vamos dando, infraestructura diseños,
+en la carpeta /docs generar toda la documentacion en diferentes directorios
+```
+
+**Resultado clave:**
+> 16 archivos de documentación organizados en 6 subdirectorios: entrega1/, architecture/, design/, infrastructure/, database/, features/. Más READMEs actualizados en backend/ y frontend/.
+
+**Impacto:** Documentación completa y navegable de todo el proyecto.
+
+---
+
+## 7. Historias de Usuario
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 4. Especificación de la API
+## 8. Tickets de Trabajo
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 5. Historias de Usuario
-
-*Prompts pendientes de documentar durante el desarrollo*
-
----
-
-## 6. Tickets de Trabajo
-
-*Prompts pendientes de documentar durante el desarrollo*
-
----
-
-## 7. Pull Requests
+## 9. Pull Requests
 
 ### PR #1: Documentación técnica (Entrega 1)
 
@@ -170,13 +302,14 @@ antes de tomar una decisión
 
 | Herramienta | Uso |
 |-------------|-----|
-| **Claude Code (CLI)** | Análisis, documentación, arquitectura, código |
-| *Pendiente* | *Se añadirán según se usen* |
+| **Claude Code (CLI)** | Análisis, documentación, arquitectura, modelo de datos, código |
+| **Figma AI** | Generación de diseños UI a partir de prompts |
 
 ---
 
 ## Estadísticas
 
-- **Total prompts documentados:** 6
-- **Categoría dominante:** Arquitectura del sistema
+- **Total prompts documentados:** 14
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1)
 - **Fecha inicio:** Enero 2026
+- **Última actualización:** Febrero 2026
