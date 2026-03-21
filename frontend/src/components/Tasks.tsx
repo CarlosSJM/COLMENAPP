@@ -1,0 +1,316 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Badge } from "./ui/badge";
+import { Checkbox } from "./ui/checkbox";
+import { Plus, Calendar, AlertCircle, CheckCircle2, Circle } from "lucide-react";
+import { mockTasks, mockHives } from "../data/mockData";
+import { toast } from "sonner";
+
+export function Tasks() {
+  const [tasks, setTasks] = useState(mockTasks);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "high":
+        return "bg-red-100 text-red-800 border-red-300";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+      case "low":
+        return "bg-green-100 text-green-800 border-green-300";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-300";
+    }
+  };
+
+  const getPriorityLabel = (priority: string) => {
+    const labels = {
+      high: "Alta",
+      medium: "Media",
+      low: "Baja",
+    };
+    return labels[priority as keyof typeof labels] || priority;
+  };
+
+  const isOverdue = (dueDate: string) => {
+    return new Date(dueDate) < new Date();
+  };
+
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === "pending") return !task.completed;
+    if (filter === "completed") return task.completed;
+    return true;
+  });
+
+  const handleToggleTask = (taskId: string) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      )
+    );
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      toast.success(task.completed ? "Tarea marcada como pendiente" : "Tarea completada");
+    }
+  };
+
+  const handleAddTask = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
+    const hiveId = formData.get("hive_id") as string;
+    const hive = hiveId && hiveId !== "none" ? mockHives.find(h => h.id === hiveId) : undefined;
+    
+    const newTask = {
+      id: String(tasks.length + 1),
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
+      due_date: formData.get("due_date") as string,
+      priority: formData.get("priority") as "low" | "medium" | "high",
+      completed: false,
+      hive_id: hiveId && hiveId !== "none" ? hiveId : undefined,
+      hive_name: hive?.name || undefined,
+    };
+
+    setTasks([...tasks, newTask]);
+    setIsAddDialogOpen(false);
+    toast.success("Tarea agregada exitosamente");
+  };
+
+  const pendingCount = tasks.filter((t) => !t.completed).length;
+  const overdueCount = tasks.filter((t) => !t.completed && isOverdue(t.due_date)).length;
+  const completedCount = tasks.filter((t) => t.completed).length;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-amber-900 mb-2">Tareas</h2>
+          <p className="text-amber-700">Gestiona las tareas de tu apiario</p>
+        </div>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-amber-600 hover:bg-amber-700">
+              <Plus className="size-4 mr-2" />
+              Nueva Tarea
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Agregar Nueva Tarea</DialogTitle>
+              <DialogDescription>
+                Crea una nueva tarea para gestionar tu apiario
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleAddTask} className="space-y-4">
+              <div>
+                <Label htmlFor="title">Título</Label>
+                <Input id="title" name="title" required placeholder="Ej: Revisión de colmena" />
+              </div>
+
+              <div>
+                <Label htmlFor="description">Descripción</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  required
+                  placeholder="Describe la tarea en detalle..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="due_date">Fecha de Vencimiento</Label>
+                  <Input id="due_date" name="due_date" type="date" required />
+                </div>
+                <div>
+                  <Label htmlFor="priority">Prioridad</Label>
+                  <Select name="priority" defaultValue="medium" required>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Baja</SelectItem>
+                      <SelectItem value="medium">Media</SelectItem>
+                      <SelectItem value="high">Alta</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="hive_id">Colmena (Opcional)</Label>
+                <Select name="hive_id" defaultValue="none">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona una colmena (opcional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Ninguna (tarea general)</SelectItem>
+                    {mockHives.map((hive) => (
+                      <SelectItem key={hive.id} value={hive.id}>
+                        {hive.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit" className="bg-amber-600 hover:bg-amber-700">
+                  Agregar Tarea
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="border-amber-200 bg-white">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm">Tareas Pendientes</CardTitle>
+            <Circle className="size-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-amber-900">{pendingCount}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-amber-200 bg-white">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm">Tareas Vencidas</CardTitle>
+            <AlertCircle className="size-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">{overdueCount}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-amber-200 bg-white">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm">Tareas Completadas</CardTitle>
+            <CheckCircle2 className="size-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{completedCount}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filter */}
+      <div className="flex gap-2">
+        <Button
+          variant={filter === "all" ? "default" : "outline"}
+          onClick={() => setFilter("all")}
+          className={filter === "all" ? "bg-amber-600 hover:bg-amber-700" : ""}
+        >
+          Todas
+        </Button>
+        <Button
+          variant={filter === "pending" ? "default" : "outline"}
+          onClick={() => setFilter("pending")}
+          className={filter === "pending" ? "bg-amber-600 hover:bg-amber-700" : ""}
+        >
+          Pendientes
+        </Button>
+        <Button
+          variant={filter === "completed" ? "default" : "outline"}
+          onClick={() => setFilter("completed")}
+          className={filter === "completed" ? "bg-amber-600 hover:bg-amber-700" : ""}
+        >
+          Completadas
+        </Button>
+      </div>
+
+      {/* Tasks List */}
+      <div className="space-y-3">
+        {filteredTasks.map((task) => (
+          <Card
+            key={task.id}
+            className={`border-amber-200 ${
+              task.completed ? "bg-gray-50 opacity-60" : "bg-white"
+            }`}
+          >
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-4">
+                <Checkbox
+                  checked={task.completed}
+                  onCheckedChange={() => handleToggleTask(task.id)}
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <h3
+                        className={`font-semibold text-amber-900 ${
+                          task.completed ? "line-through" : ""
+                        }`}
+                      >
+                        {task.title}
+                      </h3>
+                      <p
+                        className={`text-sm text-amber-700 mt-1 ${
+                          task.completed ? "line-through" : ""
+                        }`}
+                      >
+                        {task.description}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge className={getPriorityColor(task.priority)}>
+                        {getPriorityLabel(task.priority)}
+                      </Badge>
+                      {!task.completed && isOverdue(task.due_date) && (
+                        <Badge className="bg-red-100 text-red-800 border-red-300">
+                          Vencida
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 mt-3 text-sm text-amber-600">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="size-4" />
+                      <span>
+                        {new Date(task.due_date).toLocaleDateString("es-ES", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                    {task.hive_name && (
+                      <Badge variant="outline" className="text-amber-700 border-amber-300">
+                        {task.hive_name}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+
+        {filteredTasks.length === 0 && (
+          <Card className="border-amber-200 bg-white">
+            <CardContent className="py-12 text-center">
+              <CheckCircle2 className="size-12 text-amber-400 mx-auto mb-3" />
+              <p className="text-amber-700">No hay tareas en esta categoría</p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}
