@@ -44,8 +44,8 @@ docs/
 | Schema Prisma | Creado | Febrero 2026 |
 | Inicializacion Backend (NestJS) | Completada | Marzo 2026 |
 | PrismaService + Auth Module | Completado | Marzo 2026 |
-| Spec Kit Backend | Pendiente | - |
-| Spec Kit Frontend | Pendiente | - |
+| Spec Kit Backend | Completado (v1.1) | Marzo 2026 |
+| Spec Kit Frontend | Completado (v1.2) | Marzo 2026 |
 | CRUD Backend (Apiaries, Hives, etc.) | Pendiente | - |
 | Inicializacion Frontend (React+Vite) | Pendiente | - |
 | Integracion componentes Figma | Pendiente | - |

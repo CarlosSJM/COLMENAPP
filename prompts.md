@@ -8,9 +8,11 @@
 4. [Modelo de datos](#4-modelo-de-datos) (2 prompts)
 5. [Infraestructura y entorno](#5-infraestructura-y-entorno) (1 prompt)
 6. [Documentación](#6-documentación) (1 prompt)
-7. [Historias de usuario](#7-historias-de-usuario) (pendiente)
-8. [Tickets de trabajo](#8-tickets-de-trabajo) (pendiente)
-9. [Pull requests](#9-pull-requests)
+7. [Implementación Backend](#7-implementación-backend) (2 prompts)
+8. [Spec Kit (SDD)](#8-spec-kit-sdd) (2 prompts)
+9. [Historias de usuario](#9-historias-de-usuario) (pendiente)
+10. [Tickets de trabajo](#10-tickets-de-trabajo) (pendiente)
+11. [Pull requests](#11-pull-requests)
 
 ---
 
@@ -265,19 +267,99 @@ en la carpeta /docs generar toda la documentacion en diferentes directorios
 
 ---
 
-## 7. Historias de Usuario
+## 7. Implementación Backend
+
+### Prompt 1: Inicialización NestJS
+
+**Contexto:** Inicializar el proyecto backend con NestJS y dependencias core.
+
+```
+inicialicemos proyecto NestJS
+```
+
+**Resultado clave:**
+> Proyecto NestJS scaffoldeado con Prisma 6.x, @nestjs/passport, @nestjs/jwt, bcrypt,
+> class-validator, @nestjs/config. Build verificado sin errores.
+
+**Impacto:** Backend listo para desarrollo de módulos.
+
+---
+
+### Prompt 2: Módulo Auth (PrismaService + register/login/JWT)
+
+**Contexto:** Configurar los módulos base del backend.
+
+```
+[Continuación tras inicialización - configurar módulos base]
+```
+
+**Resultado clave:**
+> PrismaModule global, AuthModule completo (register, login, profile), JwtStrategy,
+> JwtAuthGuard, DTOs con validación, ValidationPipe + CORS en main.ts.
+> Eliminados archivos de ejemplo de NestJS.
+
+**Impacto:** API de autenticación funcional con 3 endpoints protegidos.
+
+---
+
+## 8. Spec Kit (SDD)
+
+### Prompt 1: Configuración de Spec Kit en backend y frontend
+
+**Contexto:** Implementar Spec-Driven Development con GitHub Spec Kit, adaptando documentación existente.
+
+```
+me refiero a esto /home/carlossjm/modelos_IA/speckit_claude_code.md revisalo y dime que te parece
+```
+
+**Resultado clave:**
+> Spec Kit v0.3.2 inicializado en backend/ y frontend/. 4 documentos core por cada uno
+> (constitution, spec, plan, tasks) rellenados con contenido real del proyecto.
+> CLAUDE.md creado en raíz con convenciones globales.
+
+**Impacto:** Metodología SDD implementada con documentación como fuente de verdad.
+
+---
+
+### Prompt 2: Refinamiento de constitutions
+
+**Contexto:** Análisis iterativo de las constitutions para mejorarlas según la naturaleza del proyecto.
+
+```
+se te ocurre alguna mejora para el constitution del backend dada la naturaleza del proyecto?
+```
+
+**Decisiones tomadas:**
+
+**Backend v1.0 → v1.1:**
+- Principio II reescrito: "Offline-First" → "Sync-Ready" (idempotencia, timestamps, batch sync)
+- Principio VI ampliado: Seguridad + Ownership isolation
+- Principio VII nuevo: Integridad de Datos Apícolas (reglas de dominio)
+- Sección nueva: Restricciones (no endpoints sin spec, no queries N+1, no exponer password_hash)
+
+**Frontend v1.0 → v1.2:**
+- Principio V: UX de Campo (touch 44px, 2 toques, selects>texto)
+- Principio VIII nuevo: Rendimiento en Campo (lazy loading, no animaciones, APIs nativas)
+- Principio IX nuevo: Componentización (padres con lógica, hijos presentacionales, pragmático)
+- Legibilidad exterior (WCAG AA), restricciones de dependencias pesadas
+
+**Impacto:** Constitutions adaptadas al dominio apícola y uso en campo.
+
+---
+
+## 9. Historias de Usuario
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 8. Tickets de Trabajo
+## 10. Tickets de Trabajo
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 9. Pull Requests
+## 11. Pull Requests
 
 ### PR #1: Documentación técnica (Entrega 1)
 
@@ -302,14 +384,15 @@ en la carpeta /docs generar toda la documentacion en diferentes directorios
 
 | Herramienta | Uso |
 |-------------|-----|
-| **Claude Code (CLI)** | Análisis, documentación, arquitectura, modelo de datos, código |
+| **Claude Code (CLI)** | Análisis, documentación, arquitectura, modelo de datos, código, Spec Kit |
 | **Figma AI** | Generación de diseños UI a partir de prompts |
+| **GitHub Spec Kit** | Spec-Driven Development (constitution, spec, plan, tasks) |
 
 ---
 
 ## Estadísticas
 
-- **Total prompts documentados:** 14
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1)
+- **Total prompts documentados:** 18
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2)
 - **Fecha inicio:** Enero 2026
-- **Última actualización:** Febrero 2026
+- **Última actualización:** Marzo 2026
