@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
@@ -9,13 +9,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "./ui/badge";
 import { Checkbox } from "./ui/checkbox";
 import { Plus, Calendar, AlertCircle, CheckCircle2, Circle } from "lucide-react";
-import { mockTasks, mockHives } from "../data/mockData";
+import { api } from "../services/api";
+import { adaptTasks } from "../services/adapters";
 import { toast } from "sonner";
 
 export function Tasks() {
-  const [tasks, setTasks] = useState(mockTasks);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [hives, setHives] = useState<any[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
+
+  const loadData = () => {
+    api.getTasks().then(adaptTasks).then(setTasks).catch(() => toast.error("Error al cargar tareas"));
+    api.getHives().then(setHives).catch(() => {});
+  };
+
+  useEffect(() => { loadData(); }, []);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -49,39 +58,32 @@ export function Tasks() {
     return true;
   });
 
-  const handleToggleTask = (taskId: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
-    const task = tasks.find((t) => t.id === taskId);
-    if (task) {
-      toast.success(task.completed ? "Tarea marcada como pendiente" : "Tarea completada");
-    }
+  const handleToggleTask = async (taskId: string) => {
+    try {
+      await api.toggleTask(taskId);
+      loadData();
+      const task = tasks.find((t) => t.id === taskId);
+      toast.success(task?.completed ? "Tarea marcada como pendiente" : "Tarea completada");
+    } catch { toast.error("Error al actualizar tarea"); }
   };
 
-  const handleAddTask = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
     const hiveId = formData.get("hive_id") as string;
-    const hive = hiveId && hiveId !== "none" ? mockHives.find(h => h.id === hiveId) : undefined;
-    
-    const newTask = {
-      id: String(tasks.length + 1),
-      title: formData.get("title") as string,
-      description: formData.get("description") as string,
-      due_date: formData.get("due_date") as string,
-      priority: formData.get("priority") as "low" | "medium" | "high",
-      completed: false,
-      hive_id: hiveId && hiveId !== "none" ? hiveId : undefined,
-      hive_name: hive?.name || undefined,
-    };
 
-    setTasks([...tasks, newTask]);
-    setIsAddDialogOpen(false);
-    toast.success("Tarea agregada exitosamente");
+    try {
+      await api.createTask({
+        title: formData.get("title"),
+        description: formData.get("description") || undefined,
+        due_date: formData.get("due_date"),
+        priority: formData.get("priority"),
+        hive_id: hiveId && hiveId !== "none" ? hiveId : undefined,
+      });
+      toast.success("Tarea agregada exitosamente");
+      setIsAddDialogOpen(false);
+      loadData();
+    } catch { toast.error("Error al crear tarea"); }
   };
 
   const pendingCount = tasks.filter((t) => !t.completed).length;
@@ -154,7 +156,7 @@ export function Tasks() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Ninguna (tarea general)</SelectItem>
-                    {mockHives.map((hive) => (
+                    {hives.map((hive) => (
                       <SelectItem key={hive.id} value={hive.id}>
                         {hive.name}
                       </SelectItem>

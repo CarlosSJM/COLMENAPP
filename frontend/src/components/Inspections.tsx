@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
@@ -9,13 +9,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "./ui/badge";
 import { Checkbox } from "./ui/checkbox";
 import { Plus, Eye, Bug, ThermometerSun, Weight, Activity, Heart } from "lucide-react";
-import { mockInspections, mockHives } from "../data/mockData";
+import { api } from "../services/api";
+import { adaptInspections } from "../services/adapters";
 import { toast } from "sonner";
 
 export function Inspections() {
-  const [inspections, setInspections] = useState(mockInspections);
+  const [inspections, setInspections] = useState<any[]>([]);
+  const [hives, setHives] = useState<any[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [treatmentApplied, setTreatmentApplied] = useState(false);
+
+  const loadData = () => {
+    api.getInspections().then(adaptInspections).then(setInspections).catch(() => toast.error("Error al cargar inspecciones"));
+    api.getHives().then(setHives).catch(() => {});
+  };
+
+  useEffect(() => { loadData(); }, []);
 
   const getBroodPatternColor = (pattern: string) => {
     switch (pattern) {
@@ -79,33 +88,35 @@ export function Inspections() {
     return labels[temperament as keyof typeof labels] || temperament;
   };
 
-  const handleAddInspection = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddInspection = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
-    const hiveId = formData.get("hive_id") as string;
-    const hive = mockHives.find(h => h.id === hiveId);
-    
-    const newInspection = {
-      id: String(inspections.length + 1),
-      hive_id: hiveId,
-      hive_name: hive?.name || "",
-      date: formData.get("date") as string,
-      queen_seen: formData.get("queen_seen") === "on",
-      brood_pattern: formData.get("brood_pattern") as "excellent" | "good" | "fair" | "poor",
-      temperament: formData.get("temperament") as "calm" | "normal" | "aggressive",
-      diseases: formData.get("diseases") ? (formData.get("diseases") as string).split(",").map(d => d.trim()) : [],
-      weight: parseFloat(formData.get("weight") as string),
-      varroa_count: parseInt(formData.get("varroa_count") as string),
-      treatment_applied: formData.get("treatment_applied") === "on",
-      treatment_product: formData.get("treatment_product") as string || undefined,
-      treatment_dose: formData.get("treatment_dose") as string || undefined,
-      activity_level: formData.get("activity_level") as "Baja" | "Media" | "Alta",
-      health_status: formData.get("health_status") as "Saludable" | "Débil" | "Enferma" | "Crítica",
-      notes: formData.get("notes") as string,
-    };
+    const diseases = formData.get("diseases") ? (formData.get("diseases") as string).split(",").map(d => d.trim()).filter(Boolean) : [];
 
-    setInspections([newInspection, ...inspections]);
+    try {
+      await api.createInspection({
+        hive_id: formData.get("hive_id"),
+        date: formData.get("date"),
+        queen_seen: formData.get("queen_seen") === "on",
+        brood_pattern: formData.get("brood_pattern"),
+        temperament: formData.get("temperament"),
+        weight: parseFloat(formData.get("weight") as string),
+        varroa_count: parseInt(formData.get("varroa_count") as string),
+        activity_level: formData.get("activity_level"),
+        health_status: formData.get("health_status"),
+        diseases,
+        treatment_applied: treatmentApplied,
+        treatment_product: formData.get("treatment_product") || undefined,
+        treatment_dose: formData.get("treatment_dose") || undefined,
+        notes: formData.get("notes"),
+      });
+      toast.success("Inspección registrada exitosamente");
+      setIsAddDialogOpen(false);
+      setTreatmentApplied(false);
+      loadData();
+    } catch { toast.error("Error al crear inspección"); }
+    return;
+    setInspections([] as any);
     setIsAddDialogOpen(false);
     setTreatmentApplied(false);
     toast.success("Inspección registrada exitosamente");
@@ -144,7 +155,7 @@ export function Inspections() {
                       <SelectValue placeholder="Selecciona una colmena" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockHives.map((hive) => (
+                      {hives.map((hive) => (
                         <SelectItem key={hive.id} value={hive.id}>
                           {hive.code} - {hive.name}
                         </SelectItem>

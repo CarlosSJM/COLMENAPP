@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
@@ -7,12 +7,21 @@ import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Plus, Droplet, Package, Sparkles } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { mockProduction, mockHives } from "../data/mockData";
+import { api } from "../services/api";
+import { adaptProductions } from "../services/adapters";
 import { toast } from "sonner";
 
 export function Production() {
-  const [productions, setProductions] = useState(mockProduction);
+  const [productions, setProductions] = useState<any[]>([]);
+  const [hives, setHives] = useState<any[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  const loadData = () => {
+    api.getProductions().then(adaptProductions).then(setProductions).catch(() => toast.error("Error al cargar producción"));
+    api.getHives().then(setHives).catch(() => {});
+  };
+
+  useEffect(() => { loadData(); }, []);
 
   const stats = useMemo(() => {
     const totalHoney = productions.reduce((sum, p) => sum + p.honey_kg, 0);
@@ -41,26 +50,22 @@ export function Production() {
     return grouped;
   }, [productions]);
 
-  const handleAddProduction = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddProduction = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
-    const hiveId = formData.get("hive_id") as string;
-    const hive = mockHives.find(h => h.id === hiveId);
-    
-    const newProduction = {
-      id: String(productions.length + 1),
-      hive_id: hiveId,
-      hive_name: hive?.name || "",
-      date: formData.get("date") as string,
-      honey_kg: parseFloat(formData.get("honey_kg") as string),
-      wax_kg: parseFloat(formData.get("wax_kg") as string),
-      propolis_g: parseFloat(formData.get("propolis_g") as string),
-    };
 
-    setProductions([newProduction, ...productions]);
-    setIsAddDialogOpen(false);
-    toast.success("Producción registrada exitosamente");
+    try {
+      await api.createProduction({
+        hive_id: formData.get("hive_id"),
+        date: formData.get("date"),
+        honey_kg: parseFloat(formData.get("honey_kg") as string),
+        wax_kg: parseFloat(formData.get("wax_kg") as string),
+        propolis_g: parseFloat(formData.get("propolis_g") as string),
+      });
+      toast.success("Producción registrada exitosamente");
+      setIsAddDialogOpen(false);
+      loadData();
+    } catch { toast.error("Error al registrar producción"); }
   };
 
   return (
@@ -93,7 +98,7 @@ export function Production() {
                       <SelectValue placeholder="Selecciona una colmena" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockHives.map((hive) => (
+                      {hives.map((hive) => (
                         <SelectItem key={hive.id} value={hive.id}>
                           {hive.name}
                         </SelectItem>

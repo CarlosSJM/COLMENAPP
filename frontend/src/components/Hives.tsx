@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
@@ -9,15 +9,17 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Badge } from "./ui/badge";
 import { Plus, Users, Calendar, AlertCircle, QrCode, ScanLine, ChevronRight } from "lucide-react";
-import { mockHives, mockApiaries } from "../data/mockData";
+import { api } from "../services/api";
+import { adaptHives } from "../services/adapters";
 import { QRModal } from "./QRModal";
 import { toast } from "sonner";
 
 export function Hives() {
   const { apiaryId } = useParams();
   const navigate = useNavigate();
-  const [hives, setHives] = useState(mockHives);
-  const [selectedHive, setSelectedHive] = useState<typeof mockHives[0] | null>(null);
+  const [hives, setHives] = useState<any[]>([]);
+  const [apiaries, setApiaries] = useState<any[]>([]);
+  const [selectedHive, setSelectedHive] = useState<any | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [qrModalData, setQrModalData] = useState<{
     isOpen: boolean;
@@ -31,13 +33,20 @@ export function Hives() {
     apiaryName: "",
   });
 
-  // Filtrar colmenas por apiario si hay un apiaryId en la URL
-  const filteredHives = apiaryId
-    ? hives.filter((h) => h.apiary_id === apiaryId)
-    : hives;
+  const loadData = () => {
+    const hivesPromise = apiaryId
+      ? api.getApiaryHives(apiaryId).then(adaptHives)
+      : api.getHives().then(adaptHives);
+    hivesPromise.then(setHives).catch(() => toast.error("Error al cargar colmenas"));
+    api.getApiaries().then(setApiaries).catch(() => {});
+  };
+
+  useEffect(() => { loadData(); }, [apiaryId]);
+
+  const filteredHives = hives;
 
   const currentApiary = apiaryId
-    ? mockApiaries.find((a) => a.id === apiaryId)
+    ? apiaries.find((a: any) => a.id === apiaryId)
     : null;
 
   const getStatusColor = (status: string) => {
@@ -70,34 +79,30 @@ export function Hives() {
     }
   };
 
-  const handleAddHive = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddHive = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
     const selectedApiaryId = apiaryId || (formData.get("apiary_id") as string);
-    const apiary = mockApiaries.find(a => a.id === selectedApiaryId);
-    
-    const newHive = {
-      id: String(hives.length + 1),
-      code: formData.get("code") as string,
-      name: formData.get("name") as string,
-      apiary_id: selectedApiaryId,
-      apiary_name: apiary?.name || "",
-      status: formData.get("status") as "active" | "inactive" | "quarantine" | "lost",
-      queen_origin: formData.get("queen_origin") as "Comprada" | "Criada" | "Enjambre" | "Desconocida",
-      population: parseInt(formData.get("population") as string),
-      frames: parseInt(formData.get("frames") as string),
-      installed_at: formData.get("installed_at") as string,
-      last_inspection: new Date().toISOString().split("T")[0],
-      notes: formData.get("notes") as string,
-    };
 
-    setHives([...hives, newHive]);
-    setIsAddDialogOpen(false);
-    toast.success("Colmena agregada exitosamente");
+    try {
+      await api.createHive({
+        code: formData.get("code"),
+        name: formData.get("name"),
+        apiary_id: selectedApiaryId,
+        status: formData.get("status"),
+        queen_origin: formData.get("queen_origin"),
+        population: parseInt(formData.get("population") as string),
+        frames: parseInt(formData.get("frames") as string),
+        installed_at: formData.get("installed_at"),
+        notes: formData.get("notes") || undefined,
+      });
+      toast.success("Colmena agregada exitosamente");
+      setIsAddDialogOpen(false);
+      loadData();
+    } catch { toast.error("Error al crear colmena"); }
   };
 
-  const handleShowQR = (hive: typeof mockHives[0]) => {
+  const handleShowQR = (hive: any) => {
     setQrModalData({
       isOpen: true,
       hiveCode: hive.code,
@@ -173,7 +178,7 @@ export function Hives() {
                       <SelectValue placeholder="Selecciona un apiario" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockApiaries.map((apiary) => (
+                      {apiaries.map((apiary) => (
                         <SelectItem key={apiary.id} value={apiary.id}>
                           {apiary.name}
                         </SelectItem>
