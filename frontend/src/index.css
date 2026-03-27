@@ -41,3 +41,21 @@
   background-color: white !important;
   box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6), 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
 }
+
+/* Select/Dropdown fixes for Tailwind v4 */
+[data-slot="select-trigger"] {
+  background-color: white !important;
+  border-color: hsl(20 5.9% 90%) !important;
+}
+
+[data-slot="select-content"] {
+  background-color: white !important;
+  border-color: hsl(20 5.9% 90%) !important;
+  z-index: 100 !important;
+}
+
+[data-slot="select-item"]:focus,
+[data-slot="select-item"][data-highlighted] {
+  background-color: hsl(48 100% 96%) !important;
+  color: hsl(24 9.8% 10%) !important;
+}

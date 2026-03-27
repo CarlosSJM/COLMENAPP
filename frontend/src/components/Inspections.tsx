@@ -181,7 +181,7 @@ export function Inspections() {
                   <Label htmlFor="brood_pattern">Patrón de Cría</Label>
                   <Select name="brood_pattern" required>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Seleccionar..." />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="excellent">Excelente</SelectItem>
@@ -195,7 +195,7 @@ export function Inspections() {
                   <Label htmlFor="temperament">Temperamento</Label>
                   <Select name="temperament" required>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Seleccionar..." />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="calm">Calmada</SelectItem>
@@ -235,12 +235,12 @@ export function Inspections() {
                   <Label htmlFor="activity_level">Nivel de Actividad</Label>
                   <Select name="activity_level" required>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Seleccionar..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Baja">Baja</SelectItem>
-                      <SelectItem value="Media">Media</SelectItem>
-                      <SelectItem value="Alta">Alta</SelectItem>
+                      <SelectItem value="low">Baja</SelectItem>
+                      <SelectItem value="medium">Media</SelectItem>
+                      <SelectItem value="high">Alta</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -248,13 +248,13 @@ export function Inspections() {
                   <Label htmlFor="health_status">Estado de Salud</Label>
                   <Select name="health_status" required>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Seleccionar..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Saludable">Saludable</SelectItem>
-                      <SelectItem value="Débil">Débil</SelectItem>
-                      <SelectItem value="Enferma">Enferma</SelectItem>
-                      <SelectItem value="Crítica">Crítica</SelectItem>
+                      <SelectItem value="healthy">Saludable</SelectItem>
+                      <SelectItem value="weak">Débil</SelectItem>
+                      <SelectItem value="sick">Enferma</SelectItem>
+                      <SelectItem value="critical">Crítica</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

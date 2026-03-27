@@ -205,15 +205,15 @@ export function Hives() {
                 </div>
                 <div>
                   <Label htmlFor="queen_origin">Origen de Reina</Label>
-                  <Select name="queen_origin" defaultValue="Comprada" required>
+                  <Select name="queen_origin" defaultValue="purchased" required>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Comprada">Comprada</SelectItem>
-                      <SelectItem value="Criada">Criada</SelectItem>
-                      <SelectItem value="Enjambre">Enjambre</SelectItem>
-                      <SelectItem value="Desconocida">Desconocida</SelectItem>
+                      <SelectItem value="purchased">Comprada</SelectItem>
+                      <SelectItem value="raised">Criada</SelectItem>
+                      <SelectItem value="swarm">Enjambre</SelectItem>
+                      <SelectItem value="unknown">Desconocida</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
