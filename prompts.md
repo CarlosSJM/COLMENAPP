@@ -10,9 +10,10 @@
 6. [Documentación](#6-documentación) (1 prompt)
 7. [Implementación Backend](#7-implementación-backend) (2 prompts)
 8. [Spec Kit (SDD)](#8-spec-kit-sdd) (2 prompts)
-9. [Historias de usuario](#9-historias-de-usuario) (pendiente)
-10. [Tickets de trabajo](#10-tickets-de-trabajo) (pendiente)
-11. [Pull requests](#11-pull-requests)
+9. [Implementación Frontend](#9-implementación-frontend) (3 prompts)
+10. [Historias de usuario](#10-historias-de-usuario) (pendiente)
+11. [Tickets de trabajo](#11-tickets-de-trabajo) (pendiente)
+12. [Pull requests](#12-pull-requests)
 
 ---
 
@@ -347,19 +348,85 @@ se te ocurre alguna mejora para el constitution del backend dada la naturaleza d
 
 ---
 
-## 9. Historias de Usuario
+## 9. Implementación Frontend
+
+### Prompt 1: Inicialización React + Vite + integración Figma
+
+**Contexto:** Inicializar el frontend con React+Vite+TypeScript e integrar los componentes exportados de Figma.
+
+```
+si vayamos a por la fase 3
+```
+
+**Resultado clave:**
+> Proyecto React 18 + Vite + TypeScript scaffoldeado. Instaladas dependencias (Tailwind, shadcn/ui,
+> Recharts, Lucide, Sonner, React Router, Radix UI). Integrados los 9 componentes de Figma
+> (Dashboard, Apiaries, Hives, Inspections, Production, Tasks, QRModal, Layout, auth/).
+> Creados: AuthContext, API service, types, enums mapping, routing con rutas protegidas.
+> Build verificado (813KB).
+
+**Impacto:** Frontend funcional con mock data y toda la UI integrada.
+
+---
+
+### Prompt 2: Conexión frontend-backend (API real)
+
+**Contexto:** Reemplazar mock data por llamadas API reales al backend.
+
+```
+conectemos frontend con backend
+```
+
+**Resultado clave:**
+> Creado seed de BD (demo@colmenapp.com/123456) con datos de prueba.
+> Creado services/adapters.ts para mapear respuestas backend (hive.apiary.name → apiary_name).
+> Modificados 6 componentes: Dashboard, Apiaries, Hives, Inspections, Production, Tasks.
+> Todos los componentes ahora hacen fetch al API y reload tras mutaciones.
+
+**Impacto:** App funcional end-to-end con datos reales de PostgreSQL.
+
+---
+
+### Prompt 3: Fixes de UI (Tailwind v4 + compatibilidad)
+
+**Contexto:** Al probar la app en el navegador se detectaron varios problemas visuales causados por la incompatibilidad de los componentes shadcn/ui (diseñados para Tailwind v3) con Tailwind v4.
+
+```
+fijate todo los modales de creacion son transparentes no se ve nada
+fijate como se ven los seleccionables
+cuando hacemos focus en un input al salir el borde se come parte del label
+en modal de colmena cuando esta activa o inactiva se pega mucho la etiqueta a la x de cerrar
+```
+
+**Fixes aplicados:**
+
+| Issue | Causa | Solución |
+|-------|-------|----------|
+| Modales transparentes | Overlay de Radix no renderiza con Tailwind v4 | box-shadow 9999px en dialog-content como backdrop |
+| Dialog content sin fondo | `bg-background` no se resuelve en TW4 | CSS global: `background-color: white !important` |
+| Selects sin fondo/borde | `bg-popover`, `border-input` no se resuelven | CSS global para select-trigger y select-content |
+| Selects sin placeholder | `<SelectValue />` sin prop placeholder | Agregado `placeholder="Seleccionar..."` |
+| Enums en español en selects | Values de SelectItem en español (Baja, Saludable) | Corregido a inglés (low, healthy) para coincidir con backend |
+| Input focus borde come label | `ring-[3px]` se superpone al label | CSS global con outline sutil + margin-bottom en labels |
+| Badge pegado a X de cerrar | DialogTitle sin padding-right | `pr-10` + CSS global `padding-right: 2.5rem` en dialog-title |
+
+**Impacto:** UI consistente y legible en todos los modales, formularios e inputs.
+
+---
+
+## 10. Historias de Usuario
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 10. Tickets de Trabajo
+## 11. Tickets de Trabajo
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 11. Pull Requests
+## 12. Pull Requests
 
 ### PR #1: Documentación técnica (Entrega 1)
 
@@ -392,7 +459,7 @@ se te ocurre alguna mejora para el constitution del backend dada la naturaleza d
 
 ## Estadísticas
 
-- **Total prompts documentados:** 18
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2)
+- **Total prompts documentados:** 21
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026

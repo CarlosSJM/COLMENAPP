@@ -46,15 +46,16 @@ docs/
 | PrismaService + Auth Module | Completado | Marzo 2026 |
 | Spec Kit Backend | Completado (v1.1) | Marzo 2026 |
 | Spec Kit Frontend | Completado (v1.2) | Marzo 2026 |
-| CRUD Backend (Apiaries, Hives, etc.) | Pendiente | - |
-| Inicializacion Frontend (React+Vite) | Pendiente | - |
-| Integracion componentes Figma | Pendiente | - |
-| Conexion Frontend-Backend | Pendiente | - |
+| CRUD Backend (7 modulos, 33 rutas) | Completado | Marzo 2026 |
+| Inicializacion Frontend (React+Vite) | Completado | Marzo 2026 |
+| Integracion componentes Figma | Completado | Marzo 2026 |
+| Conexion Frontend-Backend | Completado | Marzo 2026 |
+| Fixes UI (Tailwind v4 compat) | Completado | Marzo 2026 |
 | Offline/PWA (Dexie.js) | Pendiente | - |
 
 ## Plan de Accion
 
-### Fase 1: Spec Kit (Especificaciones) ← SIGUIENTE
+### Fase 1: Spec Kit (Especificaciones) ✅
 
 **1.1 Instalar Spec Kit CLI**
 - Instalar UV (gestor paquetes Python)
@@ -79,7 +80,7 @@ docs/
 
 **1.5 Revisar y refinar** ← Ajustar specs con el usuario antes de implementar
 
-### Fase 2: Backend (CRUD y logica)
+### Fase 2: Backend (CRUD y logica) ✅
 
 | Tarea | Dependencia |
 |-------|-------------|
@@ -92,7 +93,7 @@ docs/
 | CRUD Tasks (+ toggle completada) | Hives |
 | Endpoint stats para Dashboard | Todos los CRUDs |
 
-### Fase 3: Frontend (Inicializacion y componentes)
+### Fase 3: Frontend (Inicializacion y componentes) ✅
 
 | Tarea | Dependencia |
 |-------|-------------|
@@ -103,7 +104,7 @@ docs/
 | Crear servicios API (axios/fetch) | Rutas |
 | Conectar componentes a API backend | Servicios API + Backend CRUDs |
 
-### Fase 4: Offline y PWA
+### Fase 4: Offline y PWA ← SIGUIENTE
 
 | Tarea | Dependencia |
 |-------|-------------|
