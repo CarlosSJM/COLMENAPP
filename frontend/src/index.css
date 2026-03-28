@@ -56,6 +56,11 @@
   margin-bottom: 0.375rem;
 }
 
+/* Dialog title spacing to avoid collision with close button */
+[data-slot="dialog-title"] {
+  padding-right: 2.5rem !important;
+}
+
 /* Dialog overlay - box-shadow approach for Tailwind v4 compatibility */
 [data-slot="dialog-content"] {
   background-color: white !important;

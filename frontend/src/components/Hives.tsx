@@ -355,7 +355,7 @@ export function Hives() {
         <Dialog open={!!selectedHive} onOpenChange={() => setSelectedHive(null)}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="flex items-center justify-between">
+              <DialogTitle className="flex items-center justify-between pr-10">
                 <div className="flex items-center gap-2">
                   <span>{selectedHive.name}</span>
                   <Badge variant="outline" className="text-xs">{selectedHive.code}</Badge>
