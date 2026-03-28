@@ -31,7 +31,8 @@ docs/
 │   ├── production.md            Registro de produccion
 │   ├── tasks.md                 Gestion de tareas
 │   ├── dashboard.md             Dashboard y estadisticas
-│   └── offline-sync.md          Offline/Sync y PWA
+│   ├── offline-sync.md          Offline/Sync y PWA
+│   └── crud-edit-delete.md      Edicion y eliminacion de registros
 │
 └── aprendizajes.md              Lecciones aprendidas (tecnicas, funcionales, diseno, interaccion IA)
 ```
@@ -117,6 +118,20 @@ docs/
 | PWA Manifest (instalable, standalone, iconos, tema) | Completado |
 | Service Worker (cache assets, fallback API) | Completado |
 | Dexie.js + Sync Queue | Pospuesto (complejidad alta, fase futura) |
+
+### Fase 4b: Edicion y Eliminacion ← SIGUIENTE
+
+| Tarea | Capa | Dependencia |
+|-------|------|-------------|
+| Componente ConfirmDeleteDialog reutilizable | Frontend | - |
+| Edit + Delete Apiarios | Frontend | ConfirmDeleteDialog |
+| Edit + Delete Colmenas | Frontend | ConfirmDeleteDialog |
+| Edit + Delete Tareas | Frontend | ConfirmDeleteDialog |
+| Edit + Delete Inspecciones | Frontend | ConfirmDeleteDialog |
+| Edit + Delete Produccion | Frontend | ConfirmDeleteDialog |
+| Mostrar updated_at en cards/detalles | Frontend | Edit implementado |
+
+Detalle completo: `docs/features/crud-edit-delete.md`
 
 ### Fase 5: Testing y pulido
 
