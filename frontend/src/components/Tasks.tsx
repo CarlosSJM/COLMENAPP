@@ -8,15 +8,19 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Badge } from "./ui/badge";
 import { Checkbox } from "./ui/checkbox";
-import { Plus, Calendar, AlertCircle, CheckCircle2, Circle } from "lucide-react";
+import { Plus, Calendar, AlertCircle, CheckCircle2, Circle, Pencil, Trash2 } from "lucide-react";
 import { api } from "../services/api";
 import { adaptTasks } from "../services/adapters";
+import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
 
 export function Tasks() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [hives, setHives] = useState<any[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<any | null>(null);
+  const [deletingTask, setDeletingTask] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
 
   const loadData = () => {
@@ -84,6 +88,37 @@ export function Tasks() {
       setIsAddDialogOpen(false);
       loadData();
     } catch { toast.error("Error al crear tarea"); }
+  };
+
+  const handleEditTask = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editingTask) return;
+    const formData = new FormData(e.currentTarget);
+    const hiveId = formData.get("hive_id") as string;
+    try {
+      await api.updateTask(editingTask.id, {
+        title: formData.get("title"),
+        description: formData.get("description") || undefined,
+        due_date: formData.get("due_date"),
+        priority: formData.get("priority"),
+        hive_id: hiveId && hiveId !== "none" ? hiveId : undefined,
+      });
+      toast.success("Tarea actualizada exitosamente");
+      setEditingTask(null);
+      loadData();
+    } catch { toast.error("Error al actualizar tarea"); }
+  };
+
+  const handleDeleteTask = async () => {
+    if (!deletingTask) return;
+    setIsDeleting(true);
+    try {
+      await api.deleteTask(deletingTask.id);
+      toast.success("Tarea eliminada");
+      setDeletingTask(null);
+      loadData();
+    } catch { toast.error("Error al eliminar tarea"); }
+    finally { setIsDeleting(false); }
   };
 
   const pendingCount = tasks.filter((t) => !t.completed).length;
@@ -297,6 +332,14 @@ export function Tasks() {
                         {task.hive_name}
                       </Badge>
                     )}
+                    <div className="flex gap-1 ml-auto">
+                      <Button size="sm" variant="ghost" className="size-7 p-0 text-amber-600" onClick={() => setEditingTask(task)}>
+                        <Pencil className="size-3.5" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="size-7 p-0 text-red-500" onClick={() => setDeletingTask(task)}>
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -313,6 +356,60 @@ export function Tasks() {
           </Card>
         )}
       </div>
+
+      {/* Edit Task Dialog */}
+      <Dialog open={!!editingTask} onOpenChange={() => setEditingTask(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Editar Tarea</DialogTitle>
+            <DialogDescription>Modifica los datos de la tarea</DialogDescription>
+          </DialogHeader>
+          {editingTask && (
+            <form onSubmit={handleEditTask} className="space-y-4">
+              <div><Label htmlFor="edit-title">Título</Label><Input id="edit-title" name="title" required defaultValue={editingTask.title} /></div>
+              <div><Label htmlFor="edit-desc">Descripción</Label><Textarea id="edit-desc" name="description" rows={3} defaultValue={editingTask.description} /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label htmlFor="edit-due">Fecha de Vencimiento</Label><Input id="edit-due" name="due_date" type="date" required defaultValue={editingTask.due_date?.split("T")[0]} /></div>
+                <div>
+                  <Label htmlFor="edit-priority">Prioridad</Label>
+                  <Select name="priority" defaultValue={editingTask.priority}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Baja</SelectItem>
+                      <SelectItem value="medium">Media</SelectItem>
+                      <SelectItem value="high">Alta</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="edit-hive">Colmena (Opcional)</Label>
+                <Select name="hive_id" defaultValue={editingTask.hive_id || "none"}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Ninguna (tarea general)</SelectItem>
+                    {hives.map((hive: any) => (<SelectItem key={hive.id} value={hive.id}>{hive.name}</SelectItem>))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={() => setEditingTask(null)}>Cancelar</Button>
+                <Button type="submit" className="bg-amber-600 hover:bg-amber-700">Guardar Cambios</Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <ConfirmDeleteDialog
+        isOpen={!!deletingTask}
+        onClose={() => setDeletingTask(null)}
+        onConfirm={handleDeleteTask}
+        title="Eliminar Tarea"
+        description={`¿Estás seguro de eliminar "${deletingTask?.title}"?`}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

@@ -8,11 +8,12 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Badge } from "./ui/badge";
-import { Plus, Users, Calendar, AlertCircle, QrCode, ScanLine, ChevronRight } from "lucide-react";
+import { Plus, Users, Calendar, AlertCircle, QrCode, ScanLine, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { api } from "../services/api";
 import { adaptHives } from "../services/adapters";
 import { QRModal } from "./QRModal";
 import { QRScanner } from "./QRScanner";
+import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
 
 export function Hives() {
@@ -22,6 +23,9 @@ export function Hives() {
   const [apiaries, setApiaries] = useState<any[]>([]);
   const [selectedHive, setSelectedHive] = useState<any | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editingHive, setEditingHive] = useState<any | null>(null);
+  const [deletingHive, setDeletingHive] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [qrModalData, setQrModalData] = useState<{
     isOpen: boolean;
     hiveCode: string;
@@ -129,6 +133,41 @@ export function Hives() {
     } catch {
       toast.error(`No se encontró colmena con código: ${code}`);
     }
+  };
+
+  const handleEditHive = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editingHive) return;
+    const formData = new FormData(e.currentTarget);
+    try {
+      await api.updateHive(editingHive.id, {
+        code: formData.get("code"),
+        name: formData.get("name"),
+        status: formData.get("status"),
+        queen_origin: formData.get("queen_origin"),
+        population: parseInt(formData.get("population") as string),
+        frames: parseInt(formData.get("frames") as string),
+        installed_at: formData.get("installed_at"),
+        notes: formData.get("notes") || undefined,
+      });
+      toast.success("Colmena actualizada exitosamente");
+      setEditingHive(null);
+      setSelectedHive(null);
+      loadData();
+    } catch { toast.error("Error al actualizar colmena"); }
+  };
+
+  const handleDeleteHive = async () => {
+    if (!deletingHive) return;
+    setIsDeleting(true);
+    try {
+      await api.deleteHive(deletingHive.id);
+      toast.success("Colmena eliminada");
+      setDeletingHive(null);
+      setSelectedHive(null);
+      loadData();
+    } catch { toast.error("Error al eliminar colmena"); }
+    finally { setIsDeleting(false); }
   };
 
   return (
@@ -438,13 +477,14 @@ export function Hives() {
               </div>
 
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => handleShowQR(selectedHive)}
-                >
-                  <QrCode className="size-4 mr-2" />
-                  Ver QR
+                <Button variant="outline" className="flex-1" onClick={() => handleShowQR(selectedHive)}>
+                  <QrCode className="size-4 mr-2" />Ver QR
+                </Button>
+                <Button variant="outline" className="flex-1" onClick={() => { setEditingHive(selectedHive); setSelectedHive(null); }}>
+                  <Pencil className="size-4 mr-2" />Editar
+                </Button>
+                <Button variant="outline" className="flex-1 text-red-600 hover:text-red-700" onClick={() => { setDeletingHive(selectedHive); setSelectedHive(null); }}>
+                  <Trash2 className="size-4 mr-2" />Eliminar
                 </Button>
               </div>
 
@@ -478,6 +518,71 @@ export function Hives() {
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
         onScan={handleQRScanned}
+      />
+
+      {/* Edit Hive Dialog */}
+      <Dialog open={!!editingHive} onOpenChange={() => setEditingHive(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Editar Colmena</DialogTitle>
+            <DialogDescription>Modifica los datos de la colmena</DialogDescription>
+          </DialogHeader>
+          {editingHive && (
+            <form onSubmit={handleEditHive} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label htmlFor="edit-code">Código</Label><Input id="edit-code" name="code" required defaultValue={editingHive.code} /></div>
+                <div><Label htmlFor="edit-name">Nombre</Label><Input id="edit-name" name="name" required defaultValue={editingHive.name} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-status">Estado</Label>
+                  <Select name="status" defaultValue={editingHive.status}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Activa</SelectItem>
+                      <SelectItem value="inactive">Inactiva</SelectItem>
+                      <SelectItem value="quarantine">Cuarentena</SelectItem>
+                      <SelectItem value="lost">Perdida</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-queen">Origen de Reina</Label>
+                  <Select name="queen_origin" defaultValue={editingHive.queen_origin}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="purchased">Comprada</SelectItem>
+                      <SelectItem value="raised">Criada</SelectItem>
+                      <SelectItem value="swarm">Enjambre</SelectItem>
+                      <SelectItem value="unknown">Desconocida</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label htmlFor="edit-pop">Población</Label><Input id="edit-pop" name="population" type="number" required defaultValue={editingHive.population} /></div>
+                <div><Label htmlFor="edit-frames">Cuadros</Label><Input id="edit-frames" name="frames" type="number" required defaultValue={editingHive.frames} /></div>
+              </div>
+              <div><Label htmlFor="edit-installed">Fecha de Instalación</Label><Input id="edit-installed" name="installed_at" type="date" required defaultValue={editingHive.installed_at?.split("T")[0]} /></div>
+              <div><Label htmlFor="edit-notes">Notas</Label><Textarea id="edit-notes" name="notes" rows={3} defaultValue={editingHive.notes} /></div>
+              <div className="flex gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={() => setEditingHive(null)}>Cancelar</Button>
+                <Button type="submit" className="bg-amber-600 hover:bg-amber-700">Guardar Cambios</Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <ConfirmDeleteDialog
+        isOpen={!!deletingHive}
+        onClose={() => setDeletingHive(null)}
+        onConfirm={handleDeleteHive}
+        title="Eliminar Colmena"
+        description={`¿Estás seguro de eliminar "${deletingHive?.name}" (${deletingHive?.code})?`}
+        warning="Se eliminarán todas las inspecciones, registros de producción y tareas asociadas a esta colmena."
+        isLoading={isDeleting}
       />
     </div>
   );

@@ -8,9 +8,10 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Badge } from "./ui/badge";
 import { Checkbox } from "./ui/checkbox";
-import { Plus, Eye, Bug, ThermometerSun, Weight, Activity, Heart } from "lucide-react";
+import { Plus, Eye, Bug, ThermometerSun, Weight, Activity, Heart, Trash2 } from "lucide-react";
 import { api } from "../services/api";
 import { adaptInspections } from "../services/adapters";
+import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
 
 export function Inspections() {
@@ -18,6 +19,8 @@ export function Inspections() {
   const [hives, setHives] = useState<any[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [treatmentApplied, setTreatmentApplied] = useState(false);
+  const [deletingInspection, setDeletingInspection] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadData = () => {
     api.getInspections().then(adaptInspections).then(setInspections).catch(() => toast.error("Error al cargar inspecciones"));
@@ -115,6 +118,18 @@ export function Inspections() {
       setTreatmentApplied(false);
       loadData();
     } catch { toast.error("Error al crear inspección"); }
+  };
+
+  const handleDeleteInspection = async () => {
+    if (!deletingInspection) return;
+    setIsDeleting(true);
+    try {
+      await api.deleteInspection(deletingInspection.id);
+      toast.success("Inspección eliminada");
+      setDeletingInspection(null);
+      loadData();
+    } catch { toast.error("Error al eliminar inspección"); }
+    finally { setIsDeleting(false); }
     return;
     setInspections([] as any);
     setIsAddDialogOpen(false);
@@ -351,13 +366,16 @@ export function Inspections() {
                     })}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
                   <Badge className={getBroodPatternColor(inspection.brood_pattern)}>
                     {getBroodPatternLabel(inspection.brood_pattern)}
                   </Badge>
                   <Badge className={getHealthStatusColor(inspection.health_status)}>
                     {inspection.health_status}
                   </Badge>
+                  <Button size="sm" variant="ghost" className="size-7 p-0 text-red-500 hover:text-red-700" onClick={() => setDeletingInspection(inspection)}>
+                    <Trash2 className="size-3.5" />
+                  </Button>
                 </div>
               </div>
             </CardHeader>
@@ -423,6 +441,16 @@ export function Inspections() {
           </Card>
         ))}
       </div>
+
+      {/* Delete Confirmation */}
+      <ConfirmDeleteDialog
+        isOpen={!!deletingInspection}
+        onClose={() => setDeletingInspection(null)}
+        onConfirm={handleDeleteInspection}
+        title="Eliminar Inspección"
+        description={`¿Estás seguro de eliminar la inspección de "${deletingInspection?.hive_name}" del ${deletingInspection ? new Date(deletingInspection.date).toLocaleDateString("es-ES") : ""}?`}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

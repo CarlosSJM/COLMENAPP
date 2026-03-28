@@ -5,16 +5,19 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Plus, Droplet, Package, Sparkles } from "lucide-react";
+import { Plus, Droplet, Package, Sparkles, Trash2 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { api } from "../services/api";
 import { adaptProductions } from "../services/adapters";
+import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
 
 export function Production() {
   const [productions, setProductions] = useState<any[]>([]);
   const [hives, setHives] = useState<any[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [deletingProduction, setDeletingProduction] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadData = () => {
     api.getProductions().then(adaptProductions).then(setProductions).catch(() => toast.error("Error al cargar producción"));
@@ -66,6 +69,18 @@ export function Production() {
       setIsAddDialogOpen(false);
       loadData();
     } catch { toast.error("Error al registrar producción"); }
+  };
+
+  const handleDeleteProduction = async () => {
+    if (!deletingProduction) return;
+    setIsDeleting(true);
+    try {
+      await api.deleteProduction(deletingProduction.id);
+      toast.success("Registro eliminado");
+      setDeletingProduction(null);
+      loadData();
+    } catch { toast.error("Error al eliminar registro"); }
+    finally { setIsDeleting(false); }
   };
 
   return (
@@ -264,6 +279,11 @@ export function Production() {
                     <td className="py-3 px-4 text-right text-amber-900">
                       {production.propolis_g}
                     </td>
+                    <td className="py-3 px-4 text-right">
+                      <Button size="sm" variant="ghost" className="size-7 p-0 text-red-500 hover:text-red-700" onClick={() => setDeletingProduction(production)}>
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -271,6 +291,16 @@ export function Production() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation */}
+      <ConfirmDeleteDialog
+        isOpen={!!deletingProduction}
+        onClose={() => setDeletingProduction(null)}
+        onConfirm={handleDeleteProduction}
+        title="Eliminar Registro de Producción"
+        description={`¿Estás seguro de eliminar el registro de "${deletingProduction?.hive_name}" del ${deletingProduction ? new Date(deletingProduction.date).toLocaleDateString("es-ES") : ""}?`}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
