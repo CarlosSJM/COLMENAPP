@@ -12,6 +12,7 @@ import { Plus, Users, Calendar, AlertCircle, QrCode, ScanLine, ChevronRight } fr
 import { api } from "../services/api";
 import { adaptHives } from "../services/adapters";
 import { QRModal } from "./QRModal";
+import { QRScanner } from "./QRScanner";
 import { toast } from "sonner";
 
 export function Hives() {
@@ -111,8 +112,23 @@ export function Hives() {
     });
   };
 
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+
   const handleScanQR = () => {
-    toast.info("Función de escaneo QR en desarrollo");
+    setIsScannerOpen(true);
+  };
+
+  const handleQRScanned = async (code: string) => {
+    setIsScannerOpen(false);
+    try {
+      const hive = await api.getHiveByCode(code);
+      if (hive) {
+        setSelectedHive({ ...hive, apiary_name: hive.apiary?.name || '' });
+        toast.success(`Colmena ${code} encontrada`);
+      }
+    } catch {
+      toast.error(`No se encontró colmena con código: ${code}`);
+    }
   };
 
   return (
@@ -455,6 +471,13 @@ export function Hives() {
         hiveCode={qrModalData.hiveCode}
         hiveName={qrModalData.hiveName}
         apiaryName={qrModalData.apiaryName}
+      />
+
+      {/* QR Scanner */}
+      <QRScanner
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={handleQRScanned}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { QrCode, Printer } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 interface QRModalProps {
   isOpen: boolean;
@@ -15,9 +16,7 @@ export function QRModal({ isOpen, onClose, hiveCode, hiveName, apiaryName }: QRM
     window.print();
   };
 
-  // En una app real, aquí generarías el QR con una librería como qrcode.react
-  // Por ahora usaremos un placeholder
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(hiveCode)}`;
+  const qrValue = `colmenapp://hive/${hiveCode}`;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -29,12 +28,14 @@ export function QRModal({ isOpen, onClose, hiveCode, hiveName, apiaryName }: QRM
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-6">
-          {/* QR Code */}
+          {/* QR Code - generated locally */}
           <div className="flex justify-center p-6 bg-white rounded-lg border-2 border-amber-200">
-            <img
-              src={qrCodeUrl}
-              alt={`QR Code para ${hiveCode}`}
-              className="size-64"
+            <QRCodeSVG
+              value={qrValue}
+              size={256}
+              level="M"
+              fgColor="#78350f"
+              bgColor="#ffffff"
             />
           </div>
 
