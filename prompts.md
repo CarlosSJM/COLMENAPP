@@ -11,9 +11,10 @@
 7. [Implementación Backend](#7-implementación-backend) (2 prompts)
 8. [Spec Kit (SDD)](#8-spec-kit-sdd) (2 prompts)
 9. [Implementación Frontend](#9-implementación-frontend) (3 prompts)
-10. [Historias de usuario](#10-historias-de-usuario) (pendiente)
-11. [Tickets de trabajo](#11-tickets-de-trabajo) (pendiente)
-12. [Pull requests](#12-pull-requests)
+10. [Fase 4: QR + PWA](#10-fase-4-qr--pwa) (1 prompt)
+11. [Historias de usuario](#11-historias-de-usuario) (pendiente)
+12. [Tickets de trabajo](#12-tickets-de-trabajo) (pendiente)
+13. [Pull requests](#13-pull-requests)
 
 ---
 
@@ -414,19 +415,49 @@ en modal de colmena cuando esta activa o inactiva se pega mucho la etiqueta a la
 
 ---
 
-## 10. Historias de Usuario
+## 10. Fase 4: QR + PWA
+
+### Prompt 1: QR Scanner + QR local + PWA
+
+**Contexto:** Implementar las features de Fase 4 priorizando QR y PWA sobre Dexie.js.
+
+```
+empecemos por QR + PWA
+```
+
+**Resultado clave:**
+
+**QR Scanner:**
+> Componente QRScanner con html5-qrcode. FAB en Hives abre camara trasera,
+> escanea codigo, busca colmena via API por codigo, abre detalle.
+> Parsea formato `colmenapp://hive/{code}` o texto plano.
+
+**QR Generation:**
+> Reemplazada API externa (qrserver.com) por qrcode.react (QRCodeSVG).
+> Generacion 100% local, color amber, SVG imprimible, nivel M de correccion.
+
+**PWA:**
+> manifest.json (standalone, tema amber, iconos), Service Worker
+> (cache-first assets, network-first API con fallback), meta tags
+> para iOS y Android. App instalable en movil.
+
+**Impacto:** App funciona como PWA instalable con QR bidireccional (generar + escanear).
+
+---
+
+## 11. Historias de Usuario
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 11. Tickets de Trabajo
+## 12. Tickets de Trabajo
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 12. Pull Requests
+## 13. Pull Requests
 
 ### PR #1: Documentación técnica (Entrega 1)
 
@@ -459,7 +490,7 @@ en modal de colmena cuando esta activa o inactiva se pega mucho la etiqueta a la
 
 ## Estadísticas
 
-- **Total prompts documentados:** 21
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3)
+- **Total prompts documentados:** 22
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026

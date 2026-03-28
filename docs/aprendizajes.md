@@ -159,20 +159,50 @@ Cada vez que se pregunto "que opinas?" o "te parece correcto?" antes de implemen
 
 ---
 
-## 5. Metricas del Proyecto
+## 5. Aprendizajes Fase 4 (QR + PWA)
+
+### 5.1 Generar QR localmente es mejor que depender de una API
+
+El componente Figma original usaba `api.qrserver.com` para generar QR. Esto implica: dependencia de red, latencia, y falla en offline. Con `qrcode.react` el QR se genera instantaneamente en el navegador como SVG.
+
+**Leccion:** Para contenido que se puede generar en el cliente (QR, graficos, previsualizaciones), siempre preferir librerias locales sobre APIs externas.
+
+### 5.2 El formato del QR debe ser un protocolo propio
+
+Usar `colmenapp://hive/{code}` como formato del QR permite distinguir codigos de COLMENAPP de cualquier otro QR. El scanner parsea este formato pero tambien acepta texto plano como fallback.
+
+**Leccion:** Definir un esquema URI propio para los datos de la app. Es una decision barata que da flexibilidad futura (deep links, integracion con otras apps).
+
+### 5.3 La PWA es el 80/20 del offline
+
+El manifest + service worker + meta tags dan el 80% del valor offline (app instalable, assets cacheados, carga rapida) con el 20% del esfuerzo. Dexie.js + sync queue darian el 20% restante (mutaciones offline) pero con el 80% del esfuerzo.
+
+**Leccion:** Para un MVP, PWA basica (cache de assets + fallback API) es suficiente. La sincronizacion offline completa es una feature de v2.
+
+### 5.4 html5-qrcode es pesada pero funcional
+
+La libreria html5-qrcode anadio ~380KB al bundle (de 813KB a 1196KB). Funciona bien pero es pesada.
+
+**Leccion:** Para produccion, considerar lazy loading del scanner (solo cargarlo cuando el usuario pulsa el FAB). En el MVP es aceptable.
+
+---
+
+## 6. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 14 |
-| Prompts documentados | 21 |
+| Commits en feature branch | 17 |
+| Prompts documentados | 22 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
 | Endpoints API | 33 |
 | Pantallas UI | 9 |
 | Componentes UI (shadcn) | ~15 |
+| Componentes custom | QRScanner, QRModal, adapters |
 | Fixes UI (Tailwind v4) | 7 |
-| Fases completadas | 3 de 5 |
-| Documentos en docs/ | 16+ |
+| Fases completadas | 4 de 5 |
+| Documentos en docs/ | 17+ |
+| Bundle size | 1196KB (355KB gzip) |
 
 ---
 

@@ -53,7 +53,9 @@ docs/
 | Integracion componentes Figma | Completado | Marzo 2026 |
 | Conexion Frontend-Backend | Completado | Marzo 2026 |
 | Fixes UI (Tailwind v4 compat) | Completado | Marzo 2026 |
-| Offline/PWA (Dexie.js) | Pendiente | - |
+| QR Scanner + QR Generation | Completado | Marzo 2026 |
+| PWA (Manifest + Service Worker) | Completado | Marzo 2026 |
+| Offline Sync (Dexie.js + Queue) | Pendiente (fase futura) | - |
 
 ## Plan de Accion
 
@@ -106,14 +108,15 @@ docs/
 | Crear servicios API (axios/fetch) | Rutas |
 | Conectar componentes a API backend | Servicios API + Backend CRUDs |
 
-### Fase 4: Offline y PWA ← SIGUIENTE
+### Fase 4: QR + PWA ✅
 
-| Tarea | Dependencia |
-|-------|-------------|
-| Configurar Dexie.js (schemas IndexedDB) | Frontend conectado |
-| Implementar sync queue | Dexie.js |
-| Service Worker + Web App Manifest | Dexie.js |
-| QR Scanner (html5-qrcode) | Frontend conectado |
+| Tarea | Estado |
+|-------|--------|
+| QR Scanner (html5-qrcode, camara, buscar por codigo) | Completado |
+| QR Generation (qrcode.react, local, SVG, imprimible) | Completado |
+| PWA Manifest (instalable, standalone, iconos, tema) | Completado |
+| Service Worker (cache assets, fallback API) | Completado |
+| Dexie.js + Sync Queue | Pospuesto (complejidad alta, fase futura) |
 
 ### Fase 5: Testing y pulido
 

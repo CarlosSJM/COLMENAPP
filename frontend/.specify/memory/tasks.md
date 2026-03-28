@@ -37,19 +37,21 @@
 - [ ] Servicio tasks (CRUD + toggle)
 - [ ] Servicio dashboard (stats)
 
-## Phase 5: Offline / PWA
-- [ ] Configurar Dexie.js con schemas para cada entidad
-- [ ] Implementar sync queue (operaciones pendientes)
-- [ ] Hook useOnlineStatus
-- [ ] Service Worker + cache de assets
-- [ ] Web App Manifest (manifest.json)
-- [ ] Indicadores sync en header
+## Phase 5: PWA (COMPLETADO)
+- [x] Service Worker (cache-first assets, network-first API)
+- [x] Web App Manifest (manifest.json, standalone, iconos, tema)
+- [x] Meta tags PWA (theme-color, apple-mobile-web-app)
+- [x] Hook useOnlineStatus (integrado en AuthContext)
+- [x] Indicadores Online/Offline en header
+- [ ] Configurar Dexie.js con schemas para cada entidad (POSPUESTO)
+- [ ] Implementar sync queue (operaciones pendientes) (POSPUESTO)
 
-## Phase 6: QR Scanner
-- [ ] Instalar html5-qrcode
-- [ ] Crear componente QRScanner (abre camara)
-- [ ] Integrar en FAB de pantalla Colmenas
-- [ ] Parsear formato `colmenapp://hive/{code}` y navegar
+## Phase 6: QR Scanner (COMPLETADO)
+- [x] Instalar html5-qrcode + qrcode.react
+- [x] Crear componente QRScanner (abre camara trasera)
+- [x] Integrar en FAB de pantalla Colmenas
+- [x] Parsear formato `colmenapp://hive/{code}` y navegar
+- [x] Reemplazar QR externo (qrserver.com) por QRCodeSVG local
 
 ## Phase 7: Testing
 - [ ] Tests componentes criticos (Dashboard, Hives, Inspections)
