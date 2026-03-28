@@ -23,15 +23,17 @@ docs/
 ├── database/                    Base de datos
 │   └── schema.md                Modelos, enums, relaciones, indices
 │
-└── features/                    Funcionalidades del MVP
-    ├── auth.md                  Autenticacion (login, registro, JWT)
-    ├── apiaries.md              Gestion de apiarios
-    ├── hives.md                 Gestion de colmenas + QR
-    ├── inspections.md           Registro de inspecciones
-    ├── production.md            Registro de produccion
-    ├── tasks.md                 Gestion de tareas
-    ├── dashboard.md             Dashboard y estadisticas
-    └── offline-sync.md          Offline/Sync y PWA
+├── features/                    Funcionalidades del MVP
+│   ├── auth.md                  Autenticacion (login, registro, JWT)
+│   ├── apiaries.md              Gestion de apiarios
+│   ├── hives.md                 Gestion de colmenas + QR
+│   ├── inspections.md           Registro de inspecciones
+│   ├── production.md            Registro de produccion
+│   ├── tasks.md                 Gestion de tareas
+│   ├── dashboard.md             Dashboard y estadisticas
+│   └── offline-sync.md          Offline/Sync y PWA
+│
+└── aprendizajes.md              Lecciones aprendidas (tecnicas, funcionales, diseno, interaccion IA)
 ```
 
 ## Progreso
