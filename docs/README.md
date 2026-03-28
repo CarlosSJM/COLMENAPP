@@ -56,6 +56,7 @@ docs/
 | Fixes UI (Tailwind v4 compat) | Completado | Marzo 2026 |
 | QR Scanner + QR Generation | Completado | Marzo 2026 |
 | PWA (Manifest + Service Worker) | Completado | Marzo 2026 |
+| Edit/Delete todas las entidades | Completado | Marzo 2026 |
 | Offline Sync (Dexie.js + Queue) | Pendiente (fase futura) | - |
 
 ## Plan de Accion
@@ -119,7 +120,7 @@ docs/
 | Service Worker (cache assets, fallback API) | Completado |
 | Dexie.js + Sync Queue | Pospuesto (complejidad alta, fase futura) |
 
-### Fase 4b: Edicion y Eliminacion ← SIGUIENTE
+### Fase 4b: Edicion y Eliminacion ✅
 
 | Tarea | Capa | Dependencia |
 |-------|------|-------------|
@@ -133,7 +134,7 @@ docs/
 
 Detalle completo: `docs/features/crud-edit-delete.md`
 
-### Fase 5: Testing y pulido
+### Fase 5: Testing y pulido ← SIGUIENTE
 
 | Tarea | Dependencia |
 |-------|-------------|

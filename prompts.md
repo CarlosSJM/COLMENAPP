@@ -12,9 +12,10 @@
 8. [Spec Kit (SDD)](#8-spec-kit-sdd) (2 prompts)
 9. [Implementación Frontend](#9-implementación-frontend) (3 prompts)
 10. [Fase 4: QR + PWA](#10-fase-4-qr--pwa) (1 prompt)
-11. [Historias de usuario](#11-historias-de-usuario) (pendiente)
-12. [Tickets de trabajo](#12-tickets-de-trabajo) (pendiente)
-13. [Pull requests](#13-pull-requests)
+11. [Fase 4b: Edicion y Eliminacion](#11-fase-4b-edicion-y-eliminacion) (1 prompt)
+12. [Historias de usuario](#12-historias-de-usuario) (pendiente)
+13. [Tickets de trabajo](#13-tickets-de-trabajo) (pendiente)
+14. [Pull requests](#14-pull-requests)
 
 ---
 
@@ -445,19 +446,46 @@ empecemos por QR + PWA
 
 ---
 
-## 11. Historias de Usuario
+## 11. Fase 4b: Edicion y Eliminacion
+
+### Prompt 1: Implementacion CRUD completo
+
+**Contexto:** El MVP solo tenia creacion y listado. Faltaban edicion y eliminacion en toda la UI.
+
+```
+Implementemos, cuando implementemos probamos y documentamos y hacemos commit
+```
+
+**Resultado clave:**
+
+**Analisis previo:**
+> Backend (PUT/DELETE) y BD (updated_at) ya implementados. Todo el trabajo es frontend.
+
+**Implementado:**
+> ConfirmDeleteDialog reutilizable con warnings CASCADE.
+> Apiarios: edit dialog + delete + updated_at visible.
+> Colmenas: edit dialog desde detalle + delete con warning.
+> Tareas: edit dialog + delete + botones en cada card.
+> Inspecciones: delete con confirmacion.
+> Produccion: delete en cada fila de tabla.
+
+**Impacto:** CRUD completo en todas las entidades. La app es funcional para uso real.
+
+---
+
+## 12. Historias de Usuario
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 12. Tickets de Trabajo
+## 13. Tickets de Trabajo
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 13. Pull Requests
+## 14. Pull Requests
 
 ### PR #1: Documentación técnica (Entrega 1)
 
@@ -490,7 +518,7 @@ empecemos por QR + PWA
 
 ## Estadísticas
 
-- **Total prompts documentados:** 22
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1)
+- **Total prompts documentados:** 23
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (1)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026

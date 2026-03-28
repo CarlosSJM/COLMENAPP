@@ -3,15 +3,15 @@
 ## Contexto
 El MVP actual permite crear y listar registros en todas las entidades, pero no permite editarlos ni eliminarlos desde la UI. Los endpoints del backend (PUT y DELETE) ya estan implementados y funcionan. El trabajo pendiente es exclusivamente en el frontend.
 
-## Estado Actual
+## Estado de Implementacion
 
-| Entidad | Crear | Listar | Editar | Eliminar | Mostrar updated_at |
-|---------|-------|--------|--------|----------|-------------------|
-| Apiarios | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Colmenas | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Inspecciones | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Produccion | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Tareas | ✅ | ✅ (+ toggle) | ❌ | ❌ | ❌ |
+| Entidad | Crear | Listar | Editar | Eliminar | updated_at |
+|---------|-------|--------|--------|----------|------------|
+| Apiarios | ✅ | ✅ | ✅ | ✅ (CASCADE warning) | ✅ |
+| Colmenas | ✅ | ✅ | ✅ | ✅ (CASCADE warning) | - |
+| Inspecciones | ✅ | ✅ | - | ✅ | - |
+| Produccion | ✅ | ✅ | - | ✅ | - |
+| Tareas | ✅ | ✅ (+ toggle) | ✅ | ✅ | - |
 
 ## Analisis por Capa
 
