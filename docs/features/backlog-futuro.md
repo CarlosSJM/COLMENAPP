@@ -212,11 +212,99 @@ Implementar tablas de auditoria que registren cada edicion de apiarios y colmena
 
 ---
 
+## TK-F006: Sistema de Logs de Errores del Backend
+
+**Tipo:** Backend
+**Prioridad:** Alta
+**Historia:** Como desarrollador quiero que todos los errores del backend queden registrados con contexto suficiente para poder diagnosticar fallos en produccion.
+
+### Descripcion
+Implementar un sistema centralizado de logging que capture todos los errores y excepciones del backend, con contexto (usuario, endpoint, payload, timestamp) y persistencia para su analisis posterior.
+
+### Funcionalidades
+- Captura automatica de todas las excepciones no controladas
+- Log de errores HTTP (4xx, 5xx) con request context
+- Log de errores de Prisma (queries fallidas, constraints)
+- Log de fallos de autenticacion (login fallido, token invalido/expirado)
+- Niveles de log: ERROR, WARN, INFO, DEBUG
+- Rotacion de logs (evitar que crezcan indefinidamente)
+- En produccion: persistencia en archivo y/o servicio externo
+
+### Cambios necesarios
+
+**Backend:**
+- Instalar libreria de logging: `winston` o `pino` (recomendado pino por rendimiento)
+- Crear modulo LoggerModule con servicio centralizado
+- Implementar ExceptionFilter global que capture todas las excepciones:
+  ```typescript
+  @Catch()
+  export class AllExceptionsFilter implements ExceptionFilter {
+    catch(exception: unknown, host: ArgumentsHost) {
+      // Log: timestamp, method, url, status, message, stack, userId
+    }
+  }
+  ```
+- Implementar LoggingInterceptor para registrar requests/responses:
+  ```typescript
+  @Injectable()
+  export class LoggingInterceptor implements NestInterceptor {
+    intercept(context: ExecutionContext, next: CallHandler) {
+      // Log: method, url, duration, status
+    }
+  }
+  ```
+- Configurar transports:
+  - Desarrollo: consola con formato legible (pretty print)
+  - Produccion: archivo JSON rotativo + opcionalmente servicio externo
+
+**Estructura de un log de error:**
+```json
+{
+  "timestamp": "2026-03-29T10:30:00Z",
+  "level": "error",
+  "method": "POST",
+  "url": "/api/v1/inspections",
+  "statusCode": 500,
+  "message": "Unique constraint failed on code",
+  "userId": "uuid-123",
+  "requestBody": { "hive_id": "...", "date": "..." },
+  "stack": "PrismaClientKnownRequestError...",
+  "duration": "45ms"
+}
+```
+
+**Opciones de persistencia en produccion:**
+
+| Opcion | Coste | Descripcion |
+|--------|-------|-------------|
+| Archivos JSON rotativos | 0€ | Logs en disco del servidor, rotacion diaria |
+| Logtail / Better Stack | Gratis (1GB/mes) | Dashboard web, busqueda, alertas |
+| Sentry | Gratis (5K eventos/mes) | Tracking de errores, agrupacion, alertas |
+| Datadog | Gratis (limitado) | Metricas + logs + APM |
+
+**Recomendacion MVP:** Winston/Pino con archivos JSON en disco + opcionalmente Sentry para errores criticos.
+
+**Frontend:**
+- No requiere cambios directos
+- Futuro: pagina de admin para visualizar logs (post-MVP)
+
+### Criterios de aceptacion
+- [ ] Todas las excepciones quedan registradas con timestamp, endpoint y mensaje
+- [ ] Los errores de autenticacion registran el email intentado (no la contrasena)
+- [ ] Los errores de Prisma registran el modelo y la operacion
+- [ ] En desarrollo: logs legibles en consola con colores
+- [ ] En produccion: logs en formato JSON persistidos en archivo
+- [ ] Los logs NO contienen passwords, tokens JWT completos ni datos sensibles
+- [ ] Rotacion de archivos configurada (maximo 7 dias o 100MB)
+
+---
+
 ## Prioridad de Implementacion
 
 | Ticket | Prioridad | Complejidad | Dependencias |
 |--------|-----------|-------------|-------------|
 | TK-F001 | Alta | Media | Ninguna |
+| TK-F006 | Alta | Media | Ninguna |
 | TK-F002 | Media | Baja | Ninguna (endpoints existen) |
 | TK-F003 | Media | Media | Ampliar seed |
 | TK-F004 | Media-Alta | Alta | Afecta todos los modelos |
