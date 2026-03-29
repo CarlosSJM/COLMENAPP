@@ -448,9 +448,30 @@ empecemos por QR + PWA
 
 ## 11. Fase 4b: Edicion y Eliminacion
 
-### Prompt 1: Implementacion CRUD completo
+### Prompt 1: Documentacion y analisis de tareas pendientes
 
-**Contexto:** El MVP solo tenia creacion y listado. Faltaban edicion y eliminacion en toda la UI.
+**Contexto:** El usuario detectó que el MVP no tenía edición ni eliminación en la UI.
+
+```
+he observado algunas mejoras, mejor dicho tareas que no tuvimos en cuenta para el mvp,
+documentalas en el directorio de tareas:
+1. edicion de apiarios, colmenas, inspecciones, registros de produccion y tareas
+2. delete de apiarios, colmenas, inspecciones, registros de produccion y tareas
+```
+
+**Resultado clave:**
+> Análisis por capas: Backend (PUT/DELETE ya implementados), BD (updated_at ya existe),
+> Frontend (todo el trabajo pendiente). Se creó docs/features/crud-edit-delete.md con
+> especificación detallada por entidad, decisiones sobre CASCADE warnings, y prioridad
+> de implementación.
+
+**Impacto:** Tarea bien definida antes de implementar. Se identificó que 0% del trabajo era backend.
+
+---
+
+### Prompt 2: Implementación CRUD completo
+
+**Contexto:** Con las tareas documentadas, implementar edit/delete en todas las entidades.
 
 ```
 Implementemos, cuando implementemos probamos y documentamos y hacemos commit
@@ -458,16 +479,19 @@ Implementemos, cuando implementemos probamos y documentamos y hacemos commit
 
 **Resultado clave:**
 
-**Analisis previo:**
-> Backend (PUT/DELETE) y BD (updated_at) ya implementados. Todo el trabajo es frontend.
+| Componente | Detalle |
+|------------|---------|
+| ConfirmDeleteDialog | Reutilizable con warning CASCADE, isLoading, titulo y descripcion dinamicos |
+| Apiarios | Edit dialog (renderForm reutilizado) + delete con warning hive_count + updated_at visible |
+| Colmenas | Edit dialog desde detalle (todos los campos) + delete con CASCADE warning |
+| Tareas | Edit dialog (titulo, desc, fecha, prioridad, colmena) + delete. Botones en cada card |
+| Inspecciones | Delete con confirmacion (fecha + colmena). Sin edicion (registros historicos) |
+| Produccion | Delete en cada fila de tabla. Sin edicion (registros historicos) |
 
-**Implementado:**
-> ConfirmDeleteDialog reutilizable con warnings CASCADE.
-> Apiarios: edit dialog + delete + updated_at visible.
-> Colmenas: edit dialog desde detalle + delete con warning.
-> Tareas: edit dialog + delete + botones en cada card.
-> Inspecciones: delete con confirmacion.
-> Produccion: delete en cada fila de tabla.
+**Decisiones clave:**
+- Inspecciones y Producción sin edición: son registros históricos en la práctica apícola
+- Cierre de dialog antes de abrir otro para evitar apilamiento
+- Warning CASCADE muestra impacto concreto (número de colmenas afectadas)
 
 **Impacto:** CRUD completo en todas las entidades. La app es funcional para uso real.
 
@@ -518,7 +542,7 @@ Implementemos, cuando implementemos probamos y documentamos y hacemos commit
 
 ## Estadísticas
 
-- **Total prompts documentados:** 23
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (1)
+- **Total prompts documentados:** 24
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026

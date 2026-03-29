@@ -187,22 +187,58 @@ La libreria html5-qrcode anadio ~380KB al bundle (de 813KB a 1196KB). Funciona b
 
 ---
 
-## 6. Metricas del Proyecto
+## 6. Aprendizajes Fase 4b (Edicion y Eliminacion)
+
+### 6.1 Analizar antes de implementar ahorra el 80% del trabajo
+
+Antes de escribir codigo, se analizo que capas necesitaban cambios. Resultado: backend y BD ya estaban listos (PUT/DELETE + updated_at). Solo faltaba frontend. Sin este analisis, se habria perdido tiempo revisando o reescribiendo backend innecesariamente.
+
+**Leccion:** Antes de implementar una feature nueva, hacer un inventario rapido de que ya existe en cada capa. La tabla "tiene/falta" evita duplicar trabajo.
+
+### 6.2 Un componente reutilizable vale mas que cinco copias
+
+ConfirmDeleteDialog se creo una vez y se uso en 5 entidades. Sin el, habria 5 implementaciones ligeramente diferentes de dialogs de confirmacion, con inconsistencias visuales.
+
+**Leccion:** Cuando 3+ componentes necesitan la misma UI, extraer un componente reutilizable ANTES de implementar los casos individuales. Definir la interfaz primero (props), implementar despues.
+
+### 6.3 No todo necesita edicion en un MVP
+
+Inspecciones y Produccion son registros historicos. Editarlos no tiene sentido en la practica apicola (se registra una nueva inspeccion, no se edita la anterior). Tener los endpoints backend listos por si acaso es suficiente.
+
+**Leccion:** Cuestionar cada accion CRUD: "El usuario realmente necesita esto?". Crear y listar son obligatorios. Editar y eliminar dependen del dominio.
+
+### 6.4 Los warnings CASCADE son UX critica
+
+Cuando un apicultor elimina un apiario con 8 colmenas y anos de datos, un simple "Estas seguro?" no es suficiente. El warning "Se eliminaran 8 colmenas y todos sus registros" previene perdida de datos accidental.
+
+**Leccion:** En operaciones destructivas con CASCADE, el dialog de confirmacion debe mostrar el IMPACTO concreto (numero de registros afectados), no solo pedir confirmacion generica.
+
+### 6.5 Cerrar dialog antes de abrir otro
+
+En Colmenas, al pulsar "Editar" desde el detalle, primero se cierra el detalle y luego se abre el editor. Apilar dialogs genera problemas de z-index, overlays multiples, y confusion visual.
+
+**Leccion:** Nunca apilar dialogs modales. Si una accion dentro de un dialog abre otro dialog, cerrar el primero antes.
+
+---
+
+## 7. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 17 |
-| Prompts documentados | 22 |
+| Commits en feature branch | 21 |
+| Prompts documentados | 23 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
 | Endpoints API | 33 |
 | Pantallas UI | 9 |
 | Componentes UI (shadcn) | ~15 |
-| Componentes custom | QRScanner, QRModal, adapters |
+| Componentes custom | QRScanner, QRModal, ConfirmDeleteDialog, adapters |
 | Fixes UI (Tailwind v4) | 7 |
-| Fases completadas | 4 de 5 |
-| Documentos en docs/ | 17+ |
-| Bundle size | 1196KB (355KB gzip) |
+| Entidades con CRUD completo | 5 (Apiarios, Colmenas, Inspecciones, Produccion, Tareas) |
+| Fases completadas | 4b de 5 |
+| Documentos en docs/ | 18 |
+| Bundle size | ~1200KB (~360KB gzip) |
+| Aprendizajes documentados | 25 |
 
 ---
 

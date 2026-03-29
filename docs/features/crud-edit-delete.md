@@ -1,95 +1,75 @@
 # Feature: Edicion y Eliminacion de Registros
 
 ## Contexto
-El MVP actual permite crear y listar registros en todas las entidades, pero no permite editarlos ni eliminarlos desde la UI. Los endpoints del backend (PUT y DELETE) ya estan implementados y funcionan. El trabajo pendiente es exclusivamente en el frontend.
+El MVP inicial permitia crear y listar registros pero no editarlos ni eliminarlos. Los endpoints del backend (PUT y DELETE) ya estaban implementados. El trabajo fue exclusivamente frontend.
 
 ## Estado de Implementacion
 
 | Entidad | Crear | Listar | Editar | Eliminar | updated_at |
 |---------|-------|--------|--------|----------|------------|
-| Apiarios | ✅ | ✅ | ✅ | ✅ (CASCADE warning) | ✅ |
-| Colmenas | ✅ | ✅ | ✅ | ✅ (CASCADE warning) | - |
-| Inspecciones | ✅ | ✅ | - | ✅ | - |
-| Produccion | ✅ | ✅ | - | ✅ | - |
-| Tareas | ✅ | ✅ (+ toggle) | ✅ | ✅ | - |
-
-## Analisis por Capa
-
-### Backend - No requiere cambios
-- PUT endpoints ya implementados en todos los modulos
-- DELETE endpoints ya implementados con CASCADE/SET NULL
-- `updated_at` ya existe en el schema Prisma con `@updatedAt` (se actualiza automaticamente)
-- Los DTOs de Update (PartialType) ya aceptan campos parciales
-
-### Base de Datos - No requiere cambios
-- `updated_at` con `@updatedAt` ya se actualiza automaticamente en cada UPDATE
-- Las politicas CASCADE (Apiary→Hive→Inspection/Production) y SET NULL (Hive→Task) ya estan definidas
-
-### Frontend - Requiere implementacion
-
-#### 1. Edicion de Registros
-
-Cada entidad necesita:
-- **Boton "Editar"** en la card o dialog de detalle
-- **Dialog de edicion** que reutilice el formulario de creacion, pre-rellenado con datos actuales
-- **Llamada API** al endpoint PUT correspondiente
-- **Reload de datos** tras edicion exitosa
-- **Toast de confirmacion** "Registro actualizado exitosamente"
-
-| Entidad | Boton en | Formulario | Endpoint |
-|---------|----------|-----------|----------|
-| Apiarios | Card | Dialog (nombre, ubicacion, lat/lng, notas) | PUT /apiaries/:id |
-| Colmenas | Card / Detalle dialog | Dialog (code, name, status, queen_origin, population, frames, notes) | PUT /hives/:id |
-| Inspecciones | Card | Dialog (todos los campos de inspeccion) | PUT /inspections/:id |
-| Produccion | Fila de tabla | Dialog (colmena, fecha, miel, cera, propoleo) | PUT /productions/:id |
-| Tareas | Card | Dialog (titulo, descripcion, fecha, prioridad, colmena) | PUT /tasks/:id |
-
-#### 2. Eliminacion de Registros
-
-Cada entidad necesita:
-- **Boton "Eliminar"** en la card o dialog de detalle (icono Trash, color rojo)
-- **Dialog de confirmacion** antes de eliminar: "Estas seguro? Esta accion no se puede deshacer."
-- **Advertencia CASCADE** para Apiarios ("Se eliminaran todas las colmenas del apiario") y Colmenas ("Se eliminaran inspecciones, produccion y tareas asociadas")
-- **Llamada API** al endpoint DELETE correspondiente
-- **Reload de datos** tras eliminacion
-- **Toast de confirmacion** "Registro eliminado"
-
-| Entidad | Advertencia CASCADE | Endpoint |
-|---------|-------------------|----------|
-| Apiarios | "Se eliminaran X colmenas y todos sus registros" | DELETE /apiaries/:id |
-| Colmenas | "Se eliminaran inspecciones, produccion y tareas vinculadas" | DELETE /hives/:id |
-| Inspecciones | Sin advertencia extra | DELETE /inspections/:id |
-| Produccion | Sin advertencia extra | DELETE /productions/:id |
-| Tareas | Sin advertencia extra | DELETE /tasks/:id |
-
-#### 3. Mostrar updated_at
-
-- En la card o detalle de cada entidad, mostrar "Ultima actualizacion: DD/MM/YYYY HH:mm"
-- Solo mostrar si `updated_at` difiere de `created_at` (es decir, si fue editado)
-- Formato: fecha relativa para recientes ("hace 2 horas") o fecha absoluta para antiguas
-- Color: texto amber-600, tamano xs
+| Apiarios | ✅ | ✅ | ✅ Dialog pre-rellenado | ✅ CASCADE warning | ✅ En card |
+| Colmenas | ✅ | ✅ | ✅ Dialog desde detalle | ✅ CASCADE warning | - |
+| Inspecciones | ✅ | ✅ | - | ✅ Confirmacion | - |
+| Produccion | ✅ | ✅ | - | ✅ En cada fila | - |
+| Tareas | ✅ | ✅ + toggle | ✅ Dialog completo | ✅ Confirmacion | - |
 
 ## Componente Reutilizable: ConfirmDeleteDialog
 
-Para evitar duplicar el dialog de confirmacion en cada entidad:
+Componente creado en `src/components/ConfirmDeleteDialog.tsx` que se usa en todas las entidades:
 
 ```typescript
 interface ConfirmDeleteDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  title: string;          // "Eliminar Apiario"
-  description: string;    // "Se eliminaran todas las colmenas..."
-  isLoading: boolean;
+  title: string;           // "Eliminar Apiario"
+  description: string;     // "¿Estás seguro de eliminar 'Apiario Norte'?"
+  warning?: string;        // "Se eliminarán X colmenas y todos sus registros"
+  isLoading?: boolean;
 }
 ```
 
-## Prioridad de Implementacion
+**Caracteristicas:**
+- Icono AlertTriangle rojo en titulo
+- Warning en recuadro rojo si hay CASCADE
+- Boton "Eliminar" rojo con estado de carga
+- Boton "Cancelar" deshabilitado durante eliminacion
 
-| Orden | Entidad | Justificacion |
-|-------|---------|---------------|
-| 1 | Apiarios | Mas simple, sirve de base para las demas |
-| 2 | Colmenas | La mas usada en campo |
-| 3 | Tareas | Toggle ya existe, agregar edit/delete es natural |
-| 4 | Inspecciones | Formulario mas complejo pero mismo patron |
-| 5 | Produccion | Patron identico a inspecciones |
+## Implementacion por Entidad
+
+### Apiarios
+- **Editar**: Boton Pencil en header de card → Dialog con formulario pre-rellenado (nombre, ubicacion, lat/lng, notas) → PUT /apiaries/:id → reload
+- **Eliminar**: Boton Trash2 en header de card → ConfirmDeleteDialog con warning si tiene colmenas ("Se eliminaran X colmena(s) y todos sus registros") → DELETE /apiaries/:id → reload
+- **updated_at**: Mostrado en footer de card como "Editado: DD MMM YYYY, HH:mm" solo si difiere de created_at
+- **Formulario reutilizado**: Funcion `renderForm()` genera el mismo form para crear y editar con defaultValues
+
+### Colmenas
+- **Editar**: Boton Pencil en dialog de detalle → Dialog con todos los campos (code, name, status, queen_origin, population, frames, installed_at, notes) → PUT /hives/:id → reload
+- **Eliminar**: Boton Trash2 en dialog de detalle → ConfirmDeleteDialog con warning CASCADE ("Se eliminaran inspecciones, produccion y tareas") → DELETE /hives/:id → reload
+- **Flujo**: Detalle se cierra al abrir edicion o eliminacion para evitar dialogs apilados
+
+### Tareas
+- **Editar**: Boton Pencil en cada card de tarea → Dialog (titulo, descripcion, fecha, prioridad, colmena opcional) → PUT /tasks/:id → reload
+- **Eliminar**: Boton Trash2 en cada card → ConfirmDeleteDialog simple → DELETE /tasks/:id → reload
+- **Botones**: Ubicados en la zona inferior de cada card junto a la fecha y colmena
+
+### Inspecciones
+- **Eliminar**: Boton Trash2 en header de cada card (junto a badges) → ConfirmDeleteDialog con fecha y nombre de colmena → DELETE /inspections/:id → reload
+- **Sin edicion**: Decisión de MVP - las inspecciones son registros historicos, no se editan normalmente
+
+### Produccion
+- **Eliminar**: Boton Trash2 en cada fila de la tabla → ConfirmDeleteDialog con fecha y nombre de colmena → DELETE /productions/:id → reload
+- **Sin edicion**: Decisión de MVP - los registros de produccion son historicos
+
+## Decisiones Tecnicas
+
+### Por que no se implemento edicion en Inspecciones y Produccion
+Son registros historicos de datos de campo. En la practica apicola, una inspeccion ya realizada no se "edita" - se registra una nueva. Lo mismo con cosechas. Editar estos registros podria comprometer la integridad del historial.
+
+Si fuera necesario en el futuro, los endpoints PUT ya estan listos en el backend.
+
+### Por que updated_at solo en Apiarios
+Es la entidad mas editada (cambiar notas, ubicacion). En Colmenas, el estado se ve en el badge. En Tareas, el toggle de completado es la accion principal. No tiene sentido visual mostrar updated_at en todas las entidades del MVP.
+
+### Patron de cierre de dialogs al editar/eliminar desde detalle
+En Colmenas, al pulsar "Editar" o "Eliminar" desde el dialog de detalle, primero se cierra el detalle y luego se abre el dialog de edicion/eliminacion. Esto evita apilar multiples dialogs con overlays.
