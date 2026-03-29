@@ -34,6 +34,9 @@ docs/
 │   ├── offline-sync.md          Offline/Sync y PWA
 │   └── crud-edit-delete.md      Edicion y eliminacion de registros
 │
+├── testing/                     Testing
+│   └── e2e-backend.md           Tests E2E backend (34 tests, manual de ejecucion)
+│
 └── aprendizajes.md              Lecciones aprendidas (tecnicas, funcionales, diseno, interaccion IA)
 ```
 
