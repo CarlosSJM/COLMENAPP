@@ -250,14 +250,21 @@ jobs:
 
 ### Paso 4: Verificacion Post-Deploy
 
-**Checklist:**
+**Checklist (verificado 29 marzo 2026):**
 
-- [ ] Backend responde: `curl https://colmenapp-api.onrender.com/api/v1/auth/login` (debe dar 401, no 404)
-- [ ] Frontend carga: abrir `https://colmenapp.vercel.app` en navegador
-- [ ] Login funciona: demo@colmenapp.com / 123456
-- [ ] CORS correcto: el frontend puede hacer requests al backend
-- [ ] PWA instalable: Chrome muestra opcion "Instalar"
-- [ ] Datos del seed visibles: apiarios, colmenas, inspecciones
+- [x] Backend responde: `https://colmenapp.onrender.com/api/v1/auth/login` devuelve JSON (404 en GET, correcto - login es POST)
+- [x] Swagger accesible: `https://colmenapp.onrender.com/api/docs` con credenciales colmenapp/1234colmenapp
+- [x] Frontend carga: `https://colmenapp.vercel.app` muestra pantalla de login
+- [x] Login funciona: demo@colmenapp.com / 123456 → redirige a Dashboard
+- [x] CORS correcto: frontend hace requests al backend sin errores
+- [x] Dashboard: 6 colmenas, 4 activas, 1 inactiva, 1 cuarentena, grafico por apiario, ultimas 5 inspecciones
+- [x] Apiarios: 3 cards (Este, Sur, Norte) con ubicacion, coordenadas, notas, botones editar/eliminar
+- [x] Colmenas: 6 cards con codigos (AN-001, AS-002, etc.), badges de estado, poblacion, cuadros, QR, detalles
+- [x] FAB scanner QR visible en pantalla de colmenas
+- [x] Badge "Online" visible en header
+- [x] Navegacion entre todas las pantallas funciona
+
+**Nota sobre Render Free:** El backend se duerme tras 15 minutos de inactividad. El primer request tras dormir tarda ~30 segundos. Para demos: visitar `https://colmenapp.onrender.com/api/docs` un minuto antes de presentar para despertar el servidor.
 
 ---
 

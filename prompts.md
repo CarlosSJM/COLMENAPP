@@ -665,11 +665,17 @@ vayamos al despliegue del front en vercel
 - Branch: `finalproject-CSM` (default en GitHub)
 
 **URLs de produccion:**
-- Frontend: https://colmenapp-4gk7s4z9e-carlossjms-projects.vercel.app
+- Frontend: https://colmenapp.vercel.app
 - Backend: https://colmenapp.onrender.com
 - Swagger: https://colmenapp.onrender.com/api/docs
+- Demo: demo@colmenapp.com / 123456
 
-**Impacto:** App completa desplegada. Frontend + Backend + BD. Coste: 0€/mes.
+**Verificacion post-deploy (29 marzo 2026):**
+> Login, Dashboard (6 colmenas, stats, grafico), Apiarios (3 cards con editar/eliminar),
+> Colmenas (6 cards con codigos, estados, QR, FAB scanner), CORS, navegacion - todo verificado
+> funcionando en produccion via Chrome browser automation.
+
+**Impacto:** App completa desplegada y verificada. Frontend + Backend + BD. Coste: 0€/mes.
 
 ---
 

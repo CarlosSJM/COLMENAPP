@@ -20,7 +20,7 @@
 | **Nombre completo** | Carlos San Juan Martin |
 | **Nombre del proyecto** | COLMENAPP |
 | **Descripción breve** | Aplicación web PWA para la gestión profesional de apiarios y colmenas, con funcionamiento offline-first, diseñada para apicultores con 100+ colmenas que necesitan registrar datos de campo de manera eficiente |
-| **URL del proyecto** | https://colmenapp-4gk7s4z9e-carlossjms-projects.vercel.app |
+| **URL del proyecto** | https://colmenapp.vercel.app |
 | **URL Backend API** | https://colmenapp.onrender.com |
 | **URL Swagger API** | https://colmenapp.onrender.com/api/docs (user: colmenapp / pass: 1234colmenapp) |
 | **URL del repositorio** | https://github.com/CarlosSJM/COLMENAPP |

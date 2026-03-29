@@ -353,13 +353,19 @@ Frontend en Vercel y backend en Render se despliegan independientemente. Si hay 
 
 **Leccion:** Para proyectos fullstack con monorepo, desplegar frontend y backend en plataformas separadas con Root Directory diferente. La complejidad extra de configurar CORS y env vars se compensa con deploys mas rapidos y rollbacks independientes.
 
+### 8.13 Verificar en produccion con datos reales, no asumir que funciona
+
+El deploy "exitoso" en Vercel y Render no significa que la app funciona. Hubo problemas adicionales: SPA routing (404 en rutas directas), CORS con URL incorrecta, Vercel authentication bloqueando acceso publico. Solo la verificacion real con login + navegacion confirma que todo funciona.
+
+**Leccion:** Despues de cada deploy, seguir una checklist de verificacion con acciones reales (login, crear dato, navegar). "Build successful" no es "app funciona".
+
 ---
 
 ## 9. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 42 |
+| Commits en feature branch | 44 |
 | Prompts documentados | 31 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
@@ -380,7 +386,8 @@ Frontend en Vercel y backend en Render se despliegan independientemente. Si hay 
 | Swagger API docs | /api/docs (basic auth) |
 | Problemas de deploy resueltos | 9 (6 Render + 3 Vercel) |
 | Deploy coste | 0€/mes |
-| Aprendizajes documentados | 45 |
+| Verificacion post-deploy | 11 checks pasados |
+| Aprendizajes documentados | 46 |
 
 ---
 
