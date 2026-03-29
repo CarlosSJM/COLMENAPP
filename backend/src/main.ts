@@ -21,7 +21,7 @@ async function bootstrap() {
 
   // Swagger docs protected with basic auth
   app.use(
-    '/api/docs*',
+    ['/api/docs', '/api/docs-json', '/api/docs-yaml'],
     basicAuth({
       challenge: true,
       users: {
