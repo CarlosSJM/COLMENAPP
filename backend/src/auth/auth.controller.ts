@@ -6,11 +6,13 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
+@ApiTags('Auth')
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -25,6 +27,7 @@ export class AuthController {
     return this.authService.login(dto);
   }
 
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getProfile(@Request() req) {

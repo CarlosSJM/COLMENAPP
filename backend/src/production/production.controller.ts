@@ -2,11 +2,14 @@ import {
   Controller, Get, Post, Put, Delete,
   Body, Param, UseGuards, Request,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductionService } from './production.service';
 import { CreateProductionDto } from './dto/create-production.dto';
 import { UpdateProductionDto } from './dto/update-production.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+@ApiTags('Production')
+@ApiBearerAuth('JWT')
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1')
 export class ProductionController {

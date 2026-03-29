@@ -2,11 +2,14 @@ import {
   Controller, Get, Post, Put, Delete,
   Body, Param, UseGuards, Request,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { HivesService } from './hives.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+@ApiTags('Hives')
+@ApiBearerAuth('JWT')
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/hives')
 export class HivesController {

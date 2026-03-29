@@ -2,11 +2,14 @@ import {
   Controller, Get, Post, Put, Delete,
   Body, Param, UseGuards, Request,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ApiariesService } from './apiaries.service';
 import { CreateApiaryDto } from './dto/create-apiary.dto';
 import { UpdateApiaryDto } from './dto/update-apiary.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+@ApiTags('Apiaries')
+@ApiBearerAuth('JWT')
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/apiaries')
 export class ApiariesController {
