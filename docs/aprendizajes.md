@@ -277,12 +277,40 @@ Los tests e2e descubrieron que las tareas generales no se listaban (bug de owner
 
 ---
 
-## 8. Metricas del Proyecto
+## 8. Aprendizajes de Despliegue
+
+### 8.1 El free tier es suficiente para un MVP academico
+
+Render Free + Vercel Hobby dan despliegue completo a coste cero. El sleep de 15 minutos en Render Free es la unica limitacion real, y para una demo es aceptable (el primer request tarda ~30s).
+
+**Leccion:** Antes de pagar hosting, verificar si el free tier cubre las necesidades. Para MVPs y demos, casi siempre es suficiente. El coste de infraestructura no debe ser un bloqueante para entregar.
+
+### 8.2 Auto-deploy por webhook es mas simple que CI/CD para deploy
+
+Vercel y Render detectan push a main y despliegan automaticamente. No necesitan GitHub Actions para deploy. GitHub Actions se usa solo para CI (correr tests), no para CD.
+
+**Leccion:** No sobreingenierar el pipeline. Si la plataforma ya tiene auto-deploy, usarlo. GitHub Actions para deploy solo aporta valor si necesitas steps custom (build Docker, etc).
+
+### 8.3 Siempre tener un plan B de deploy manual
+
+Si Render o Vercel fallan, tener documentado como desplegar manualmente en un VPS o GitHub Pages. Un documento de 10 lineas con los comandos evita panico el dia de la demo.
+
+**Leccion:** Documentar la alternativa manual aunque nunca se use. Es un seguro barato.
+
+### 8.4 Las variables de entorno de produccion son diferentes a las de desarrollo
+
+DATABASE_URL, JWT_SECRET, CORS_ORIGIN, PORT - todas cambian entre dev y prod. Si no se documentan explicitamente, alguien (o tu yo futuro) intentara usar las de desarrollo.
+
+**Leccion:** Crear un checklist de variables por entorno. El .env.example de desarrollo NO es la configuracion de produccion.
+
+---
+
+## 9. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 30 |
-| Prompts documentados | 27 |
+| Commits en feature branch | 34 |
+| Prompts documentados | 28 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
 | Endpoints API | 33 |
@@ -296,9 +324,10 @@ Los tests e2e descubrieron que las tareas generales no se listaban (bug de owner
 | Tests totales | 58 |
 | Fases completadas | 5 de 5 |
 | Vulnerabilidades encontradas/corregidas | 3 |
-| Documentos en docs/ | 21 |
+| CI/CD | GitHub Actions (tests) + auto-deploy (Vercel/Render) |
+| Documentos en docs/ | 22 |
 | Bundle size | ~1200KB (~360KB gzip) |
-| Aprendizajes documentados | 33 |
+| Aprendizajes documentados | 37 |
 
 ---
 

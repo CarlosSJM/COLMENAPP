@@ -18,7 +18,8 @@ docs/
 │   └── FIGMA_PROMPT.md          Prompt para actualizar Figma AI
 │
 ├── infrastructure/              Infraestructura y entorno
-│   └── setup.md                 Docker, PostgreSQL, variables de entorno
+│   ├── setup.md                 Docker, PostgreSQL, variables de entorno
+│   └── deployment.md            Guia despliegue (Vercel + Render + GitHub Actions)
 │
 ├── database/                    Base de datos
 │   └── schema.md                Modelos, enums, relaciones, indices

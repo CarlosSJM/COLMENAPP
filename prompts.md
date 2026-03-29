@@ -14,7 +14,8 @@
 10. [Fase 4: QR + PWA](#10-fase-4-qr--pwa) (1 prompt)
 11. [Fase 4b: Edicion y Eliminacion](#11-fase-4b-edicion-y-eliminacion) (2 prompts)
 12. [Fase 5: Testing](#12-fase-5-testing) (3 prompts)
-13. [Historias de usuario](#13-historias-de-usuario) (pendiente)
+13. [Despliegue e Infraestructura](#13-despliegue-e-infraestructura) (1 prompt)
+14. [Historias de usuario](#14-historias-de-usuario) (pendiente)
 14. [Tickets de trabajo](#14-tickets-de-trabajo) (pendiente)
 15. [Pull requests](#15-pull-requests)
 
@@ -577,19 +578,55 @@ vamos a por los test unitarios
 
 ---
 
-## 13. Historias de Usuario
+## 13. Despliegue e Infraestructura
+
+### Prompt 1: Plan de despliegue y CI/CD
+
+**Contexto:** Planificar el despliegue a produccion con coste cero para el MVP.
+
+```
+analicemos todo el tema del despliegue que hablamos en primera instancia cuando
+planificamos y como podriamos hacerlo ci/cd con github actions servidores etc
+```
+
+**Analisis realizado:**
+> Evaluacion de plataformas: Vercel vs Netlify (frontend), Render vs Railway vs Fly.io (backend),
+> PostgreSQL en Render vs Neon vs Supabase (BD). Analisis de costes, limitaciones de free tier,
+> y estrategia de CI/CD.
+
+**Decision:**
+
+| Servicio | Plataforma | Coste | Razon |
+|----------|------------|-------|-------|
+| Frontend | Vercel | 0€ | Auto-deploy, zero config, preview por PR |
+| Backend | Render Free | 0€ | Node.js gratis, sleep 15min aceptable para demo |
+| BD | PostgreSQL en Render | 0€ | 256MB, 90 dias gratis, suficiente para MVP |
+| CI | GitHub Actions | 0€ | Tests automaticos en cada PR (58 tests) |
+| Deploy | Auto (webhooks) | - | Vercel y Render detectan push a main |
+
+**Implementado:**
+> Guia completa de despliegue paso a paso en docs/infrastructure/deployment.md.
+> GitHub Actions CI workflow (.github/workflows/ci.yml) con PostgreSQL service container.
+> Documentacion de deploy manual como alternativa (GitHub Pages + VPS).
+> Checklist de verificacion post-deploy. Estrategia de rollback.
+
+**Impacto:** Despliegue totalmente gratuito durante 90 dias. Deploy automatico con push a main.
+
+---
+
+## 14. Historias de Usuario
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 14. Tickets de Trabajo
+## 15. Tickets de Trabajo
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 15. Pull Requests
+## 16. Pull Requests
 
 ### PR #1: Documentación técnica (Entrega 1)
 
@@ -646,7 +683,7 @@ vamos a por los test unitarios
 
 ## Estadísticas
 
-- **Total prompts documentados:** 27
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (3)
+- **Total prompts documentados:** 28
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (3), Despliegue (1)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026
