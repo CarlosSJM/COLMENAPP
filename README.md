@@ -93,35 +93,50 @@ finalproject-CSM        → Entrega final
 4. Rellenar datos → Guardar (local) → Sync automático
 ```
 
-#### Wireframes
+#### Diseño UI
 
-*Pendiente de diseño. Se incluirán capturas o enlace a Figma/wireframes antes de la Entrega 2.*
+Los diseños se crearon en Figma AI y se exportaron como código React funcional. Se realizó una comparación punto por punto entre el diseño y la documentación técnica, resultando en 9 decisiones de diseño documentadas (ver `docs/design/DESIGN_DECISIONS.md`).
+
+**9 pantallas implementadas:** Login, Register, ForgotPassword, Dashboard, Apiaries, Hives (+ QR), Inspections, Production, Tasks
 
 ### 1.4. Instrucciones de Instalación
 
-*Se completará durante el desarrollo. Incluirá:*
+**Requisitos:**
+- Node.js 20+
+- Docker (para PostgreSQL)
+- npm
 
 ```bash
-# Clonar repositorio
-git clone [URL_REPOSITORIO]
+# 1. Clonar repositorio
+git clone https://github.com/CarlosSJM/COLMENAPP.git
+cd COLMENAPP
 
-# Backend
+# 2. Levantar PostgreSQL con Docker
+docker compose up -d
+
+# 3. Backend
 cd backend
+cp ../.env.example .env
 npm install
-cp .env.example .env
 npx prisma migrate dev
-npm run start:dev
+npx prisma db seed        # Datos de prueba (demo@colmenapp.com / 123456)
+npm run start:dev          # Puerto 3000
 
-# Frontend
+# 4. Frontend (en otra terminal)
 cd frontend
 npm install
-npm run dev
+npm run dev                # Puerto 5173
 ```
 
-**Requisitos:**
-- Node.js 18+
-- PostgreSQL 14+
-- npm o yarn
+**Acceder a la app:** http://localhost:5173
+**Usuario demo:** `demo@colmenapp.com` / `123456`
+
+**Puertos:**
+| Servicio | Puerto |
+|----------|--------|
+| Frontend (Vite) | 5173 |
+| Backend (NestJS) | 3000 |
+| PostgreSQL (Docker) | 5434 |
 
 ---
 
@@ -194,40 +209,67 @@ graph TB
 COLMENAPP/
 ├── frontend/
 │   ├── src/
-│   │   ├── components/        # Componentes React reutilizables
-│   │   ├── pages/             # Páginas/vistas de la aplicación
-│   │   ├── hooks/             # Custom hooks (useOffline, useSync...)
-│   │   ├── services/          # Lógica de API y sincronización
-│   │   ├── db/                # Configuración Dexie.js (IndexedDB)
-│   │   ├── locales/           # Traducciones i18n (es/, en/)
-│   │   ├── types/             # Tipos TypeScript compartidos
-│   │   └── App.tsx
+│   │   ├── components/
+│   │   │   ├── auth/          # Login, Register, ForgotPassword
+│   │   │   ├── ui/            # shadcn/ui components
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── Apiaries.tsx
+│   │   │   ├── Hives.tsx
+│   │   │   ├── Inspections.tsx
+│   │   │   ├── Production.tsx
+│   │   │   ├── Tasks.tsx
+│   │   │   ├── Layout.tsx
+│   │   │   ├── QRModal.tsx
+│   │   │   ├── QRScanner.tsx
+│   │   │   └── ConfirmDeleteDialog.tsx
+│   │   ├── contexts/          # AuthContext (auth + online status)
+│   │   ├── services/          # API client + adapters
+│   │   ├── hooks/             # useApiData
+│   │   ├── types/             # TypeScript interfaces
+│   │   ├── utils/             # enums mapping, cn helper
+│   │   ├── data/              # Mock data (desarrollo)
+│   │   └── App.tsx            # Router + rutas protegidas
 │   ├── public/
+│   │   ├── manifest.json      # PWA manifest
+│   │   └── sw.js              # Service Worker
 │   └── package.json
 │
 ├── backend/
 │   ├── src/
-│   │   ├── auth/              # Módulo autenticación
-│   │   ├── users/             # Módulo usuarios
-│   │   ├── apiaries/          # Módulo apiarios
-│   │   ├── hives/             # Módulo colmenas
-│   │   ├── inspections/       # Módulo inspecciones
-│   │   ├── sync/              # Módulo sincronización offline
-│   │   ├── prisma/            # Servicio Prisma
-│   │   └── main.ts
+│   │   ├── auth/              # Register, login, JWT, guards
+│   │   ├── apiaries/          # CRUD apiarios + ownership
+│   │   ├── hives/             # CRUD colmenas + QR code lookup
+│   │   ├── inspections/       # CRUD inspecciones + last_inspection
+│   │   ├── production/        # CRUD producción + stats
+│   │   ├── tasks/             # CRUD tareas + toggle
+│   │   ├── dashboard/         # Stats agregadas
+│   │   ├── prisma/            # PrismaService global
+│   │   └── main.ts            # ValidationPipe, CORS
 │   ├── prisma/
-│   │   ├── schema.prisma      # Modelo de datos
-│   │   └── migrations/
+│   │   ├── schema.prisma      # 6 modelos, 7 enums
+│   │   ├── migrations/        # 2 migraciones
+│   │   └── seed.ts            # Datos de prueba
+│   ├── test/                  # 34 tests e2e
 │   └── package.json
 │
-├── docs/                       # Documentación adicional
-├── README.md                   # Este archivo
-└── prompts.md                  # Registro de prompts IA
+├── docs/                      # 21 documentos organizados
+│   ├── architecture/
+│   ├── database/
+│   ├── design/
+│   ├── features/
+│   ├── infrastructure/
+│   ├── testing/
+│   └── aprendizajes.md
+│
+├── CLAUDE.md                  # Instrucciones para Claude Code
+├── docker-compose.yml         # PostgreSQL 16
+├── README.md
+└── prompts.md                 # 27 prompts documentados
 ```
 
 **Patrón arquitectónico:**
-- **Frontend**: Componentes funcionales + hooks, separación por feature
-- **Backend**: Arquitectura modular NestJS (módulo por dominio)
+- **Frontend**: Componentes funcionales + hooks, padres con lógica, hijos presentacionales
+- **Backend**: Arquitectura modular NestJS (módulo por dominio), ownership isolation en todas las queries
 
 ### 2.4. Infraestructura y Despliegue
 
@@ -277,56 +319,60 @@ graph LR
 
 ### 2.5. Seguridad
 
-| Área | Medida | Implementación |
-|------|--------|----------------|
-| **Autenticación** | JWT con expiración | Tokens de 24h, refresh tokens de 7 días |
-| **Passwords** | Hash seguro | bcrypt con salt rounds = 10 |
-| **API** | Validación de entrada | class-validator en DTOs NestJS |
-| **API** | Rate limiting | @nestjs/throttler (100 req/min) |
-| **CORS** | Origen restringido | Solo dominios propios en producción |
-| **HTTPS** | Cifrado en tránsito | Forzado por Vercel y Railway |
-| **SQL Injection** | ORM parametrizado | Prisma (queries seguras por defecto) |
-| **XSS** | Sanitización | React escapa por defecto, validación backend |
-| **Datos sensibles** | Variables de entorno | Secrets en Railway, nunca en código |
+| Área | Medida | Estado |
+|------|--------|--------|
+| **Autenticación** | JWT con expiración 24h | ✅ Implementado |
+| **Passwords** | Hash bcrypt (salt 10) | ✅ Implementado |
+| **password_hash** | Nunca expuesto en responses (select explícito) | ✅ Verificado |
+| **Ownership isolation** | Toda query filtra por user_id | ✅ Verificado (3 fixes aplicados) |
+| **Input validation** | class-validator en todos los DTOs, whitelist activo | ✅ Implementado |
+| **CORS** | Restringido a origen del frontend | ✅ Corregido |
+| **SQL Injection** | Prisma ORM, no queries raw | ✅ Verificado |
+| **Rate limiting** | Pendiente (@nestjs/throttler) | ⚠️ Pendiente producción |
+| **Helmet.js** | Pendiente (headers seguridad) | ⚠️ Pendiente producción |
 
-**Headers de seguridad (frontend):**
-- `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: DENY`
-- `Strict-Transport-Security` (HSTS)
+**Revisión de seguridad completada:** 3 vulnerabilidades encontradas y corregidas (ver `docs/testing/security-review.md`)
 
 ### 2.6. Tests
 
-**Estrategia de testing:**
+**58 tests implementados y pasando:**
 
-| Tipo | Herramienta | Cobertura objetivo |
-|------|-------------|-------------------|
-| **Unitarios Backend** | Jest + NestJS Testing | Servicios y lógica de negocio |
-| **Unitarios Frontend** | Vitest + React Testing Library | Hooks y componentes críticos |
-| **Integración API** | Jest + Supertest | Endpoints completos |
-| **E2E** | Playwright | Flujo principal (login → inspección) |
+| Tipo | Tests | Herramienta | Que valida |
+|------|-------|-------------|-----------|
+| **E2E Backend** | 34 | Jest + Supertest | Endpoints reales contra BD PostgreSQL |
+| **Unitarios Backend** | 24 | Jest + Mocks | Lógica de negocio aislada |
+| **Frontend** | - | Pendiente | Pendiente para v2 |
 
-**Tests prioritarios MVP:**
+**Tests E2E (34):**
 
-| Test | Tipo | Descripción |
-|------|------|-------------|
-| Auth Service | Unitario | Registro, login, validación JWT |
-| Inspections Service | Unitario | CRUD inspecciones, validaciones |
-| POST /inspections | Integración | Crear inspección con datos válidos/inválidos |
-| Sync Service | Integración | Push/pull de datos offline |
-| Flujo completo | E2E | Login → Crear apiario → Crear colmena → Registrar inspección |
+| Suite | Tests | Cobertura |
+|-------|-------|-----------|
+| Auth | 10 | Register, login, validación, token, password_hash oculto |
+| Apiaries | 13 | CRUD + ownership isolation con 2 usuarios |
+| Hives | 7 | CRUD + hive_count sync + code lookup (QR) |
+| Inspections | 4 | CRUD + last_inspection update |
+
+**Tests Unitarios (24):**
+
+| Suite | Tests | Cobertura |
+|-------|-------|-----------|
+| AuthService | 7 | Hash bcrypt, login, profile sin hash |
+| ApiariesService | 6 | Ownership, user_id filter |
+| HivesService | 6 | hive_count sync, findByCode |
+| InspectionsService | 5 | last_inspection update, ownership |
 
 **Ejecución:**
 ```bash
-# Backend
-npm run test          # Unitarios
-npm run test:e2e      # Integración
+cd backend
 
-# Frontend
-npm run test          # Unitarios
+# Tests e2e (requiere Docker PostgreSQL corriendo)
+npx jest --config test/jest-e2e.json --forceExit
 
-# E2E
-npm run test:e2e      # Playwright
+# Tests unitarios (sin BD, solo mocks)
+npx jest src/**/*.service.spec.ts --forceExit
 ```
+
+**Revisión de seguridad:** 3 vulnerabilidades encontradas y corregidas (ver `docs/testing/security-review.md`)
 
 ---
 
@@ -388,15 +434,44 @@ erDiagram
         string sync_status
     }
 
+    PRODUCTION {
+        uuid id PK
+        uuid hive_id FK
+        date date
+        float honey_kg
+        float wax_kg
+        float propolis_g
+        text notes
+        datetime created_at
+    }
+
+    TASK {
+        uuid id PK
+        uuid user_id FK
+        uuid hive_id FK "nullable"
+        string title
+        text description
+        date due_date
+        enum priority
+        boolean completed
+        datetime created_at
+        datetime updated_at
+    }
+
     USER ||--o{ APIARY : "posee"
+    USER ||--o{ TASK : "tiene"
     APIARY ||--o{ HIVE : "contiene"
     HIVE ||--o{ INSPECTION : "tiene"
+    HIVE ||--o{ PRODUCTION : "produce"
+    HIVE ||--o{ TASK : "vinculada"
 ```
 
 **Relaciones:**
-- Un **Usuario** tiene muchos **Apiarios**
+- Un **Usuario** tiene muchos **Apiarios** y muchas **Tareas**
 - Un **Apiario** tiene muchas **Colmenas**
-- Una **Colmena** tiene muchas **Inspecciones**
+- Una **Colmena** tiene muchas **Inspecciones**, **Producciones** y **Tareas** (opcional)
+- Eliminar Usuario → CASCADE a todo
+- Eliminar Colmena → SET NULL en Tareas (no se pierden)
 
 ### 3.2. Descripción de Entidades Principales
 
@@ -464,147 +539,80 @@ erDiagram
 
 ## 4. Especificación de la API
 
-### Endpoint 1: POST /auth/login
+**Base URL:** `/api/v1`
+**Autenticación:** Bearer JWT en header `Authorization` (excepto register/login)
 
-```yaml
-/auth/login:
-  post:
-    summary: Iniciar sesión
-    tags: [Auth]
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required: [email, password]
-            properties:
-              email:
-                type: string
-                format: email
-                example: "apicultor@example.com"
-              password:
-                type: string
-                format: password
-                example: "miPassword123"
-    responses:
-      200:
-        description: Login exitoso
-        content:
-          application/json:
-            example:
-              access_token: "eyJhbGciOiJIUzI1NiIs..."
-              refresh_token: "eyJhbGciOiJIUzI1NiIs..."
-              user:
-                id: "uuid-123"
-                email: "apicultor@example.com"
-                name: "Juan Apicultor"
-      401:
-        description: Credenciales inválidas
-```
+### Auth (3 endpoints)
 
-### Endpoint 2: POST /inspections
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| POST | `/auth/register` | Crear cuenta (name, email, password) | No |
+| POST | `/auth/login` | Login, devuelve access_token | No |
+| GET | `/auth/me` | Perfil del usuario autenticado | JWT |
 
-```yaml
-/inspections:
-  post:
-    summary: Crear nueva inspección
-    tags: [Inspections]
-    security:
-      - bearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required: [hive_id, inspected_at]
-            properties:
-              hive_id:
-                type: string
-                format: uuid
-              inspected_at:
-                type: string
-                format: date-time
-              weight:
-                type: number
-                example: 25.5
-              activity_level:
-                type: string
-                enum: [low, medium, high]
-              varroa_count:
-                type: integer
-                example: 3
-              health_status:
-                type: string
-                enum: [good, regular, bad]
-              treatment_applied:
-                type: boolean
-              treatment_product:
-                type: string
-              notes:
-                type: string
-    responses:
-      201:
-        description: Inspección creada
-        content:
-          application/json:
-            example:
-              id: "uuid-456"
-              hive_id: "uuid-789"
-              inspected_at: "2026-02-06T10:30:00Z"
-              weight: 25.5
-              varroa_count: 3
-              sync_status: "synced"
-      400:
-        description: Datos inválidos
-      401:
-        description: No autorizado
-```
+### Apiaries (6 endpoints)
 
-### Endpoint 3: POST /sync/push
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/apiaries` | Listar apiarios del usuario |
+| POST | `/apiaries` | Crear apiario |
+| GET | `/apiaries/:id` | Obtener apiario (ownership check) |
+| PUT | `/apiaries/:id` | Actualizar apiario |
+| DELETE | `/apiaries/:id` | Eliminar apiario (CASCADE) |
+| GET | `/apiaries/:id/hives` | Listar colmenas del apiario |
 
-```yaml
-/sync/push:
-  post:
-    summary: Sincronizar cambios offline al servidor
-    tags: [Sync]
-    security:
-      - bearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              apiaries:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Apiary'
-              hives:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Hive'
-              inspections:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Inspection'
-    responses:
-      200:
-        description: Sincronización exitosa
-        content:
-          application/json:
-            example:
-              synced:
-                apiaries: 2
-                hives: 5
-                inspections: 12
-              conflicts: []
-              server_timestamp: "2026-02-06T10:35:00Z"
-      401:
-        description: No autorizado
-```
+### Hives (6 endpoints)
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/hives` | Listar todas las colmenas |
+| POST | `/hives` | Crear colmena (code único) |
+| GET | `/hives/:id` | Obtener colmena |
+| PUT | `/hives/:id` | Actualizar colmena |
+| DELETE | `/hives/:id` | Eliminar colmena (CASCADE) |
+| GET | `/hives/code/:code` | Buscar por código (QR scanner) |
+
+### Inspections (6 endpoints)
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/inspections` | Listar inspecciones |
+| POST | `/inspections` | Crear inspección (actualiza last_inspection) |
+| GET | `/inspections/:id` | Obtener inspección |
+| PUT | `/inspections/:id` | Actualizar inspección |
+| DELETE | `/inspections/:id` | Eliminar inspección |
+| GET | `/hives/:id/inspections` | Inspecciones de una colmena |
+
+### Productions (7 endpoints)
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/productions` | Listar registros de producción |
+| POST | `/productions` | Registrar producción |
+| GET | `/productions/:id` | Obtener registro |
+| PUT | `/productions/:id` | Actualizar registro |
+| DELETE | `/productions/:id` | Eliminar registro |
+| GET | `/productions/stats` | Estadísticas agregadas |
+| GET | `/hives/:id/productions` | Producción de una colmena |
+
+### Tasks (6 endpoints)
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/tasks` | Listar tareas del usuario |
+| POST | `/tasks` | Crear tarea |
+| GET | `/tasks/:id` | Obtener tarea |
+| PUT | `/tasks/:id` | Actualizar tarea |
+| PATCH | `/tasks/:id/toggle` | Toggle completada |
+| DELETE | `/tasks/:id` | Eliminar tarea |
+
+### Dashboard (1 endpoint)
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/dashboard/stats` | Estadísticas: colmenas por estado, atención requerida, inspecciones pendientes, tareas, colmenas por apiario, últimas inspecciones |
+
+**Total: 33 endpoints** | Todos protegidos con JWT + ownership isolation
 
 ---
 
@@ -794,8 +802,26 @@ arquitectura, modelo de datos, API spec, historias de usuario y tickets de traba
 
 ---
 
+## Tareas Futuras (Post-MVP)
+
+| Tarea | Prioridad | Descripción |
+|-------|-----------|-------------|
+| Tests frontend | Media | Vitest + React Testing Library para componentes críticos |
+| Offline sync (Dexie.js) | Media | IndexedDB + cola de operaciones + resolución de conflictos |
+| Rate limiting | Alta (producción) | @nestjs/throttler en endpoints de auth |
+| Helmet.js | Alta (producción) | Headers de seguridad |
+| Exportación CSV | Media | Descarga de datos por apiario |
+| Edición de inspecciones | Baja | Endpoints PUT ya implementados, falta UI |
+| Edición de producción | Baja | Endpoints PUT ya implementados, falta UI |
+
+---
+
 ## Enlaces
 
-- **Documentación técnica completa:** [docs/app_apicultura.md](docs/app_apicultura.md)
-- **Propuesta comercial MVP:** [docs/propuesta_cliente_mvp.md](docs/propuesta_cliente_mvp.md)
-- **Registro de prompts:** [prompts.md](prompts.md)
+- **Documentación del proyecto:** [docs/README.md](docs/README.md) (índice de 21 documentos)
+- **Decisiones de diseño:** [docs/design/DESIGN_DECISIONS.md](docs/design/DESIGN_DECISIONS.md)
+- **Aprendizajes:** [docs/aprendizajes.md](docs/aprendizajes.md) (33 lecciones aprendidas)
+- **Registro de prompts:** [prompts.md](prompts.md) (27 prompts documentados)
+- **Revisión de seguridad:** [docs/testing/security-review.md](docs/testing/security-review.md)
+- **Spec Kit Backend:** [backend/.specify/memory/](backend/.specify/memory/)
+- **Spec Kit Frontend:** [frontend/.specify/memory/](frontend/.specify/memory/)
