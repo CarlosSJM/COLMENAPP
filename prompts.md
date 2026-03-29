@@ -13,7 +13,7 @@
 9. [Implementación Frontend](#9-implementación-frontend) (3 prompts)
 10. [Fase 4: QR + PWA](#10-fase-4-qr--pwa) (1 prompt)
 11. [Fase 4b: Edicion y Eliminacion](#11-fase-4b-edicion-y-eliminacion) (2 prompts)
-12. [Fase 5: Testing](#12-fase-5-testing) (1 prompt)
+12. [Fase 5: Testing](#12-fase-5-testing) (2 prompts)
 13. [Historias de usuario](#13-historias-de-usuario) (pendiente)
 14. [Tickets de trabajo](#14-tickets-de-trabajo) (pendiente)
 15. [Pull requests](#15-pull-requests)
@@ -526,6 +526,28 @@ y probemos antes de hacer commit
 
 ---
 
+### Prompt 2: Revision de seguridad
+
+**Contexto:** Checklist de seguridad OWASP adaptada para el backend.
+
+```
+si [continuar con revision de seguridad]
+```
+
+**Hallazgos y fixes:**
+
+| Hallazgo | Severidad | Fix |
+|----------|-----------|-----|
+| JwtStrategy traia password_hash en memoria | Media | Agregar `select` a la query |
+| Tasks sin user_id (tareas generales sin ownership) | Alta | Agregar user_id al schema, migracion, reescribir TasksService |
+| CORS abierto a cualquier origen | Media | Restringir a origen del frontend |
+
+**Resultado:** 3 vulnerabilidades encontradas y corregidas. Checklist completa documentada en docs/testing/security-review.md.
+
+**Impacto:** Backend seguro para MVP. Ownership isolation verificado en todas las entidades.
+
+---
+
 ## 13. Historias de Usuario
 
 *Prompts pendientes de documentar durante el desarrollo*
@@ -571,7 +593,7 @@ y probemos antes de hacer commit
 
 ## Estadísticas
 
-- **Total prompts documentados:** 25
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (1)
+- **Total prompts documentados:** 26
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (2)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026

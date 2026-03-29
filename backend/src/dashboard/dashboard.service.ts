@@ -39,16 +39,12 @@ export class DashboardService {
       return h.last_inspection < fifteenDaysAgo;
     }).length;
 
-    // Pending tasks
+    // Pending tasks (now using direct user_id)
     const pendingTasks = await this.prisma.task.count({
-      where: { completed: false, hive: { apiary: { user_id: userId } } },
+      where: { completed: false, user_id: userId },
     });
     const highPriorityTasks = await this.prisma.task.count({
-      where: {
-        completed: false,
-        priority: 'high',
-        hive: { apiary: { user_id: userId } },
-      },
+      where: { completed: false, priority: 'high', user_id: userId },
     });
 
     // Hives by apiary

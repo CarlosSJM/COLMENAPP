@@ -249,12 +249,26 @@ Un simple `expect(res.body.password_hash).toBeUndefined()` en el endpoint `/me` 
 
 ---
 
+### 7.5 La revision de seguridad encuentra bugs de diseño, no solo de codigo
+
+La revision de seguridad descubrio que el modelo Task no tenia `user_id`. No era un bug de codigo (el codigo hacia lo que podia con el schema), era un bug de diseño de datos. La tabla de tareas no podia vincular tareas generales a un usuario.
+
+**Leccion:** Las revisiones de seguridad deben incluir el schema de BD, no solo el codigo. Un campo faltante en el modelo puede ser mas critico que un bug en un endpoint.
+
+### 7.6 CORS abierto es un error silencioso
+
+`enableCors()` sin parametros funciona perfectamente en desarrollo. Nadie nota que cualquier sitio web podria hacer requests a la API. Es un error que solo se detecta con una checklist explicita.
+
+**Leccion:** Los valores por defecto "permisivos" de los frameworks son peligrosos. Siempre configurar explicitamente: CORS, rate limiting, headers de seguridad.
+
+---
+
 ## 8. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 23 |
-| Prompts documentados | 25 |
+| Commits en feature branch | 25 |
+| Prompts documentados | 26 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
 | Endpoints API | 33 |
@@ -265,9 +279,10 @@ Un simple `expect(res.body.password_hash).toBeUndefined()` en el endpoint `/me` 
 | Entidades con CRUD completo | 5 (Apiarios, Colmenas, Inspecciones, Produccion, Tareas) |
 | Tests e2e backend | 34 (4 suites) |
 | Fases completadas | 5 en progreso |
-| Documentos en docs/ | 19 |
+| Vulnerabilidades encontradas/corregidas | 3 |
+| Documentos en docs/ | 20 |
 | Bundle size | ~1200KB (~360KB gzip) |
-| Aprendizajes documentados | 29 |
+| Aprendizajes documentados | 31 |
 
 ---
 

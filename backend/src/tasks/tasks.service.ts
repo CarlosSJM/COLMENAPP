@@ -7,20 +7,9 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 export class TasksService {
   constructor(private prisma: PrismaService) {}
 
-  private ownershipWhere(userId: string) {
-    return {
-      OR: [
-        { hive: { apiary: { user_id: userId } } },
-        { hive_id: null, },
-      ],
-    } as any;
-  }
-
   async findAll(userId: string) {
-    // Tasks linked to user's hives + tasks without hive (general tasks)
-    // For general tasks, we need a user_id check through apiaries
     return this.prisma.task.findMany({
-      where: { hive: { apiary: { user_id: userId } } },
+      where: { user_id: userId },
       include: { hive: { select: { name: true } } },
       orderBy: [{ completed: 'asc' }, { due_date: 'asc' }],
     });
@@ -28,7 +17,7 @@ export class TasksService {
 
   async findOne(id: string, userId: string) {
     const task = await this.prisma.task.findFirst({
-      where: { id, hive: { apiary: { user_id: userId } } },
+      where: { id, user_id: userId },
       include: { hive: { select: { name: true } } },
     });
     if (!task) throw new NotFoundException('Task not found');
@@ -44,7 +33,7 @@ export class TasksService {
     }
 
     return this.prisma.task.create({
-      data: { ...dto, due_date: new Date(dto.due_date) },
+      data: { ...dto, user_id: userId, due_date: new Date(dto.due_date) },
       include: { hive: { select: { name: true } } },
     });
   }

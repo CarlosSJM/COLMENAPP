@@ -72,13 +72,13 @@ async function main() {
     prisma.production.create({ data: { hive_id: hives[0].id, date: new Date('2026-01-15'), honey_kg: 16.0, wax_kg: 1.3, propolis_g: 160 } }),
   ]);
 
-  // Tasks
+  // Tasks (now require user_id)
   await Promise.all([
-    prisma.task.create({ data: { hive_id: hives[4].id, title: 'Tratamiento contra varroa', description: 'Aplicar ácido oxálico en Colmena Delta', due_date: new Date('2026-02-21'), priority: 'high' } }),
-    prisma.task.create({ data: { title: 'Inspección rutinaria Apiario Norte', description: 'Inspección completa de todas las colmenas', due_date: new Date('2026-02-25'), priority: 'medium' } }),
-    prisma.task.create({ data: { title: 'Revisión de reservas', description: 'Verificar reservas antes de floración', due_date: new Date('2026-02-27'), priority: 'medium' } }),
-    prisma.task.create({ data: { title: 'Limpieza de apiario', description: 'Limpiar y desinfectar Apiario Sur', due_date: new Date('2026-02-23'), priority: 'low' } }),
-    prisma.task.create({ data: { hive_id: hives[2].id, title: 'Reactivar Colmena Zeta', description: 'Evaluar condiciones para reactivación', due_date: new Date('2026-03-05'), priority: 'medium' } }),
+    prisma.task.create({ data: { user_id: user.id, hive_id: hives[4].id, title: 'Tratamiento contra varroa', description: 'Aplicar ácido oxálico en Colmena Delta', due_date: new Date('2026-02-21'), priority: 'high' } }),
+    prisma.task.create({ data: { user_id: user.id, title: 'Inspección rutinaria Apiario Norte', description: 'Inspección completa de todas las colmenas', due_date: new Date('2026-02-25'), priority: 'medium' } }),
+    prisma.task.create({ data: { user_id: user.id, title: 'Revisión de reservas', description: 'Verificar reservas antes de floración', due_date: new Date('2026-02-27'), priority: 'medium' } }),
+    prisma.task.create({ data: { user_id: user.id, title: 'Limpieza de apiario', description: 'Limpiar y desinfectar Apiario Sur', due_date: new Date('2026-02-23'), priority: 'low' } }),
+    prisma.task.create({ data: { user_id: user.id, hive_id: hives[2].id, title: 'Reactivar Colmena Zeta', description: 'Evaluar condiciones para reactivación', due_date: new Date('2026-03-05'), priority: 'medium' } }),
   ]);
 
   console.log('Seed completed. Demo user: demo@colmenapp.com / 123456');
