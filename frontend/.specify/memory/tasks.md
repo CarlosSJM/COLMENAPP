@@ -53,7 +53,8 @@
 - [x] Parsear formato `colmenapp://hive/{code}` y navegar
 - [x] Reemplazar QR externo (qrserver.com) por QRCodeSVG local
 
-## Phase 7: Testing
+## Phase 7: Testing (POSPUESTO - tarea futura)
+- [ ] Instalar Vitest + React Testing Library
 - [ ] Tests componentes criticos (Dashboard, Hives, Inspections)
-- [ ] Tests de servicios API
-- [ ] Test de flujo auth completo
+- [ ] Tests de servicios API (mock fetch)
+- [ ] Test de flujo auth completo (AuthContext)

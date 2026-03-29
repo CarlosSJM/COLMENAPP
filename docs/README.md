@@ -62,7 +62,12 @@ docs/
 | QR Scanner + QR Generation | Completado | Marzo 2026 |
 | PWA (Manifest + Service Worker) | Completado | Marzo 2026 |
 | Edit/Delete todas las entidades | Completado | Marzo 2026 |
+| Tests e2e backend (34 tests) | Completado | Marzo 2026 |
+| Tests unitarios backend (24 tests) | Completado | Marzo 2026 |
+| Revision de seguridad (3 fixes) | Completado | Marzo 2026 |
+| Actualizacion README.md Entrega 2 | Completado | Marzo 2026 |
 | Offline Sync (Dexie.js + Queue) | Pendiente (fase futura) | - |
+| Tests frontend | Pendiente (fase futura) | - |
 
 ## Plan de Accion
 
@@ -139,11 +144,23 @@ docs/
 
 Detalle completo: `docs/features/crud-edit-delete.md`
 
-### Fase 5: Testing y pulido ← SIGUIENTE
+### Fase 5: Testing y pulido ✅
 
-| Tarea | Dependencia |
-|-------|-------------|
-| Tests unitarios backend (services) | CRUDs |
-| Tests e2e backend (endpoints) | Tests unitarios |
-| Tests frontend (componentes criticos) | Frontend conectado |
-| Revision de seguridad | Todo |
+| Tarea | Estado |
+|-------|--------|
+| Tests e2e backend (34 tests, 4 suites) | Completado |
+| Tests unitarios backend (24 tests, 4 suites) | Completado |
+| Revision de seguridad (3 vulnerabilidades corregidas) | Completado |
+| Tests frontend | Pospuesto (tarea futura) |
+
+### Tareas Futuras (Post-MVP)
+
+| Tarea | Prioridad | Descripcion |
+|-------|-----------|-------------|
+| Tests frontend (Vitest + RTL) | Media | Componentes criticos: Dashboard, Hives, Auth |
+| Offline sync completo (Dexie.js) | Media | IndexedDB + cola de operaciones + conflictos |
+| Rate limiting (produccion) | Alta | @nestjs/throttler en auth endpoints |
+| Helmet.js (produccion) | Alta | Headers de seguridad |
+| Exportacion CSV | Media | Descarga de datos por apiario |
+| Edicion de inspecciones (UI) | Baja | Endpoint PUT ya listo, falta dialog en frontend |
+| Edicion de produccion (UI) | Baja | Endpoint PUT ya listo, falta dialog en frontend |

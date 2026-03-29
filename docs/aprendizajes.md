@@ -281,7 +281,7 @@ Los tests e2e descubrieron que las tareas generales no se listaban (bug de owner
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 29 |
+| Commits en feature branch | 30 |
 | Prompts documentados | 27 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
@@ -293,7 +293,8 @@ Los tests e2e descubrieron que las tareas generales no se listaban (bug de owner
 | Entidades con CRUD completo | 5 (Apiarios, Colmenas, Inspecciones, Produccion, Tareas) |
 | Tests e2e backend | 34 (4 suites) |
 | Tests unitarios backend | 24 (4 suites) |
-| Fases completadas | 5 en progreso |
+| Tests totales | 58 |
+| Fases completadas | 5 de 5 |
 | Vulnerabilidades encontradas/corregidas | 3 |
 | Documentos en docs/ | 21 |
 | Bundle size | ~1200KB (~360KB gzip) |
