@@ -12,10 +12,11 @@
 8. [Spec Kit (SDD)](#8-spec-kit-sdd) (2 prompts)
 9. [Implementación Frontend](#9-implementación-frontend) (3 prompts)
 10. [Fase 4: QR + PWA](#10-fase-4-qr--pwa) (1 prompt)
-11. [Fase 4b: Edicion y Eliminacion](#11-fase-4b-edicion-y-eliminacion) (1 prompt)
-12. [Historias de usuario](#12-historias-de-usuario) (pendiente)
-13. [Tickets de trabajo](#13-tickets-de-trabajo) (pendiente)
-14. [Pull requests](#14-pull-requests)
+11. [Fase 4b: Edicion y Eliminacion](#11-fase-4b-edicion-y-eliminacion) (2 prompts)
+12. [Fase 5: Testing](#12-fase-5-testing) (1 prompt)
+13. [Historias de usuario](#13-historias-de-usuario) (pendiente)
+14. [Tickets de trabajo](#14-tickets-de-trabajo) (pendiente)
+15. [Pull requests](#15-pull-requests)
 
 ---
 
@@ -497,19 +498,47 @@ Implementemos, cuando implementemos probamos y documentamos y hacemos commit
 
 ---
 
-## 12. Historias de Usuario
+## 12. Fase 5: Testing
+
+### Prompt 1: Tests e2e backend
+
+**Contexto:** Implementar tests end-to-end para validar la API contra la BD real.
+
+```
+empecemos por los test e2e backend, vete diciendome que estamos implementado
+y probemos antes de hacer commit
+```
+
+**Resultado clave:**
+
+| Suite | Tests | Que valida |
+|-------|-------|-----------|
+| Auth | 10 | Register (ok, duplicado, validacion), login (ok, credenciales mal), me (token, sin token, password_hash oculto) |
+| Apiaries | 13 | CRUD completo + ownership isolation con 2 usuarios |
+| Hives | 7 | CRUD + hive_count sync + buscar por code (QR) + unique constraint |
+| Inspections | 4 | Create + last_inspection actualizado + list por hive + delete |
+
+> 34 tests, 4 suites, todos pasando. Ejecutan contra BD real (Docker PostgreSQL).
+> Cada suite usa email unico con timestamp para aislamiento.
+> Documentacion completa en docs/testing/e2e-backend.md con manual de ejecucion.
+
+**Impacto:** Confianza en que la API funciona correctamente end-to-end, ownership isolation verificado.
+
+---
+
+## 13. Historias de Usuario
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 13. Tickets de Trabajo
+## 14. Tickets de Trabajo
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 14. Pull Requests
+## 15. Pull Requests
 
 ### PR #1: Documentación técnica (Entrega 1)
 
@@ -542,7 +571,7 @@ Implementemos, cuando implementemos probamos y documentamos y hacemos commit
 
 ## Estadísticas
 
-- **Total prompts documentados:** 24
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2)
+- **Total prompts documentados:** 25
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (1)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026

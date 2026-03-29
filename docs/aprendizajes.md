@@ -221,12 +221,40 @@ En Colmenas, al pulsar "Editar" desde el detalle, primero se cierra el detalle y
 
 ---
 
-## 7. Metricas del Proyecto
+## 7. Aprendizajes Fase 5 (Testing)
+
+### 7.1 Tests e2e contra BD real valen mas que mocks
+
+Los tests e2e ejecutan contra PostgreSQL real en Docker. Esto descubrio que el error de unique constraint en `code` de Hive devuelve un 500 generico (Prisma no lo convierte a 409 automaticamente). Con mocks, este comportamiento nunca se habria detectado.
+
+**Leccion:** Para APIs con reglas de BD (unique, cascade, foreign keys), testear contra la BD real. Los mocks ocultan el comportamiento real de las constraints.
+
+### 7.2 El aislamiento por email unico con timestamp es simple y efectivo
+
+Cada suite usa `test-auth-{Date.now()}@colmenapp.com` como email. Esto permite ejecutar tests en paralelo o repetidamente sin conflictos. El cleanup en `afterAll` borra por email, y CASCADE limpia todo lo asociado.
+
+**Leccion:** Para tests e2e, usar identificadores unicos con timestamp en vez de datos fijos. Limpiar por ese identificador al final. CASCADE simplifica la limpieza.
+
+### 7.3 Ownership isolation se testea mejor con dos usuarios
+
+Los tests de Apiaries crean dos usuarios y verifican que user2 no puede ver/editar/eliminar datos de user1. Esto es un test de seguridad critico que requiere dos tokens JWT separados.
+
+**Leccion:** Siempre testear ownership con al menos 2 usuarios. Un solo usuario no revela fallos de aislamiento.
+
+### 7.4 El test de password_hash no expuesto es un test de seguridad minimo
+
+Un simple `expect(res.body.password_hash).toBeUndefined()` en el endpoint `/me` verifica que no se filtra el hash. Es un test de una linea con impacto de seguridad alto.
+
+**Leccion:** Los tests de seguridad mas valiosos son a menudo los mas simples. Un `toBeUndefined()` en campos sensibles vale mas que un audit complejo.
+
+---
+
+## 8. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 21 |
-| Prompts documentados | 23 |
+| Commits en feature branch | 23 |
+| Prompts documentados | 25 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
 | Endpoints API | 33 |
@@ -235,10 +263,11 @@ En Colmenas, al pulsar "Editar" desde el detalle, primero se cierra el detalle y
 | Componentes custom | QRScanner, QRModal, ConfirmDeleteDialog, adapters |
 | Fixes UI (Tailwind v4) | 7 |
 | Entidades con CRUD completo | 5 (Apiarios, Colmenas, Inspecciones, Produccion, Tareas) |
-| Fases completadas | 4b de 5 |
-| Documentos en docs/ | 18 |
+| Tests e2e backend | 34 (4 suites) |
+| Fases completadas | 5 en progreso |
+| Documentos en docs/ | 19 |
 | Bundle size | ~1200KB (~360KB gzip) |
-| Aprendizajes documentados | 25 |
+| Aprendizajes documentados | 29 |
 
 ---
 
