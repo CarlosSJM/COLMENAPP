@@ -4,16 +4,21 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
+  // Skip seed if demo user already exists (preserve user data between deploys)
+  const existingUser = await prisma.user.findUnique({ where: { email: 'demo@colmenapp.com' } });
+  if (existingUser) {
+    console.log('Demo user already exists, skipping seed to preserve data.');
+    return;
+  }
+
   // User
   const password_hash = await bcrypt.hash('123456', 10);
-  const user = await prisma.user.upsert({
-    where: { email: 'demo@colmenapp.com' },
-    update: {},
-    create: {
+  const user = await prisma.user.create({
+    data: {
       name: 'Apicultor Demo',
       email: 'demo@colmenapp.com',
       password_hash,
-    },
+    }
   });
 
   // Apiaries
