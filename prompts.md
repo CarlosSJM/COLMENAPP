@@ -544,7 +544,12 @@ si [continuar con revision de seguridad]
 
 **Resultado:** 3 vulnerabilidades encontradas y corregidas. Checklist completa documentada en docs/testing/security-review.md.
 
-**Impacto:** Backend seguro para MVP. Ownership isolation verificado en todas las entidades.
+**Documentacion adicional generada:**
+> El usuario detecto que CORS requiere atencion especial al desplegar en produccion.
+> Se documento en docs/infrastructure/setup.md: configuracion CORS_ORIGIN,
+> checklist de despliegue, variables de entorno de produccion, y generacion de JWT_SECRET seguro.
+
+**Impacto:** Backend seguro para MVP. Ownership isolation verificado en todas las entidades. Guia de despliegue seguro documentada.
 
 ---
 

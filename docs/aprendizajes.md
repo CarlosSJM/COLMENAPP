@@ -261,13 +261,19 @@ La revision de seguridad descubrio que el modelo Task no tenia `user_id`. No era
 
 **Leccion:** Los valores por defecto "permisivos" de los frameworks son peligrosos. Siempre configurar explicitamente: CORS, rate limiting, headers de seguridad.
 
+### 7.7 Documentar la configuracion de produccion DURANTE el desarrollo, no despues
+
+La configuracion de CORS para produccion se documento inmediatamente despues de corregirla en desarrollo. Si se hubiera dejado para "cuando despleguemos", se habria olvidado o se habria desplegado con CORS abierto.
+
+**Leccion:** Cada fix de seguridad debe incluir documentacion de como configurarlo en produccion. El mismo PR que corrige el problema en dev debe documentar que hacer en prod. La documentacion de despliegue no es un "despues", es parte del fix.
+
 ---
 
 ## 8. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 25 |
+| Commits en feature branch | 27 |
 | Prompts documentados | 26 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
@@ -282,7 +288,7 @@ La revision de seguridad descubrio que el modelo Task no tenia `user_id`. No era
 | Vulnerabilidades encontradas/corregidas | 3 |
 | Documentos en docs/ | 20 |
 | Bundle size | ~1200KB (~360KB gzip) |
-| Aprendizajes documentados | 31 |
+| Aprendizajes documentados | 32 |
 
 ---
 
