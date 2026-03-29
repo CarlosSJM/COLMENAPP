@@ -1,0 +1,205 @@
+// COLMENAPP - Prisma Schema
+// Generado: 2026-02-26
+// Basado en: docs/DESIGN_DECISIONS.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum HiveStatus {
+  active
+  inactive
+  quarantine
+  lost
+}
+
+enum QueenOrigin {
+  purchased
+  raised
+  swarm
+  unknown
+}
+
+enum BroodPattern {
+  excellent
+  good
+  fair
+  poor
+}
+
+enum Temperament {
+  calm
+  normal
+  aggressive
+}
+
+enum ActivityLevel {
+  low
+  medium
+  high
+}
+
+enum HealthStatus {
+  healthy
+  weak
+  sick
+  critical
+}
+
+enum Priority {
+  low
+  medium
+  high
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  password_hash String
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  // Relations
+  apiaries      Apiary[]
+  tasks         Task[]
+
+  @@map("users")
+}
+
+model Apiary {
+  id            String    @id @default(uuid())
+  user_id       String
+  name          String
+  location      String
+  latitude      Float?
+  longitude     Float?
+  notes         String?
+  hive_count    Int       @default(0)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  // Relations
+  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  hives         Hive[]
+
+  @@map("apiaries")
+}
+
+model Hive {
+  id              String      @id @default(uuid())
+  apiary_id       String
+  code            String      @unique
+  name            String
+  status          HiveStatus  @default(active)
+  queen_origin    QueenOrigin @default(unknown)
+  population      Int?
+  frames          Int?
+  installed_at    DateTime?
+  notes           String?
+  last_inspection DateTime?
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+
+  // Relations
+  apiary          Apiary       @relation(fields: [apiary_id], references: [id], onDelete: Cascade)
+  inspections     Inspection[]
+  productions     Production[]
+  tasks           Task[]
+
+  @@index([apiary_id])
+  @@index([status])
+  @@map("hives")
+}
+
+model Inspection {
+  id                  String        @id @default(uuid())
+  hive_id             String
+  date                DateTime      @db.Date
+
+  // Observación de reina y cría
+  queen_seen          Boolean       @default(false)
+  brood_pattern       BroodPattern?
+  temperament         Temperament?
+
+  // Métricas
+  weight              Float?
+  varroa_count        Int?
+  activity_level      ActivityLevel?
+  health_status       HealthStatus  @default(healthy)
+
+  // Enfermedades y tratamiento
+  diseases            String[]      @default([])
+  treatment_applied   Boolean       @default(false)
+  treatment_product   String?
+  treatment_dose      String?
+
+  // Observaciones
+  notes               String?
+
+  created_at          DateTime      @default(now())
+  updated_at          DateTime      @updatedAt
+
+  // Relations
+  hive                Hive          @relation(fields: [hive_id], references: [id], onDelete: Cascade)
+
+  @@index([hive_id])
+  @@index([date])
+  @@index([health_status])
+  @@map("inspections")
+}
+
+model Production {
+  id            String    @id @default(uuid())
+  hive_id       String
+  date          DateTime  @db.Date
+  honey_kg      Float     @default(0)
+  wax_kg        Float     @default(0)
+  propolis_g    Float     @default(0)
+  notes         String?
+  created_at    DateTime  @default(now())
+
+  // Relations
+  hive          Hive      @relation(fields: [hive_id], references: [id], onDelete: Cascade)
+
+  @@index([hive_id])
+  @@index([date])
+  @@map("productions")
+}
+
+model Task {
+  id            String    @id @default(uuid())
+  user_id       String
+  hive_id       String?
+  title         String
+  description   String?
+  due_date      DateTime  @db.Date
+  priority      Priority  @default(medium)
+  completed     Boolean   @default(false)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  // Relations
+  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  hive          Hive?     @relation(fields: [hive_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id])
+  @@index([hive_id])
+  @@index([due_date])
+  @@index([completed])
+  @@index([priority])
+  @@map("tasks")
+}
