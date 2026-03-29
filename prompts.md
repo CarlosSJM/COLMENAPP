@@ -15,7 +15,8 @@
 11. [Fase 4b: Edicion y Eliminacion](#11-fase-4b-edicion-y-eliminacion) (2 prompts)
 12. [Fase 5: Testing](#12-fase-5-testing) (3 prompts)
 13. [Despliegue e Infraestructura](#13-despliegue-e-infraestructura) (1 prompt)
-14. [Historias de usuario](#14-historias-de-usuario) (pendiente)
+14. [Swagger API Documentation](#14-swagger-api-documentation) (1 prompt)
+15. [Historias de usuario](#15-historias-de-usuario) (pendiente)
 14. [Tickets de trabajo](#14-tickets-de-trabajo) (pendiente)
 15. [Pull requests](#15-pull-requests)
 
@@ -614,19 +615,46 @@ planificamos y como podriamos hacerlo ci/cd con github actions servidores etc
 
 ---
 
-## 14. Historias de Usuario
+## 14. Swagger API Documentation
+
+### Prompt 1: Configurar Swagger con autenticacion
+
+**Contexto:** Agregar documentacion interactiva de la API para la entrega final.
+
+```
+pregunta hicimos swagger en el backend?
+si montemos un swagger con user colmenapp contraseña 1234colmenapp
+```
+
+**Resultado clave:**
+> @nestjs/swagger configurado en /api/docs con express-basic-auth.
+> 7 tags (Auth, Apiaries, Hives, Inspections, Production, Tasks, Dashboard).
+> 33 endpoints auto-documentados desde DTOs y controllers.
+> Boton "Authorize" para probar endpoints con JWT.
+> Fix aplicado: path-to-regexp v8 no soporta wildcards, cambiado a array de rutas.
+
+**Configuracion:**
+- URL: `/api/docs`
+- Credenciales: `colmenapp` / `1234colmenapp` (configurable via `SWAGGER_USER` / `SWAGGER_PASSWORD`)
+- Proteccion: basic auth (no accesible sin credenciales)
+
+**Impacto:** Documentacion interactiva de la API accesible en produccion para evaluadores.
+
+---
+
+## 15. Historias de Usuario
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 15. Tickets de Trabajo
+## 16. Tickets de Trabajo
 
 *Prompts pendientes de documentar durante el desarrollo*
 
 ---
 
-## 16. Pull Requests
+## 17. Pull Requests
 
 ### PR #1: Documentación técnica (Entrega 1)
 
@@ -683,7 +711,7 @@ planificamos y como podriamos hacerlo ci/cd con github actions servidores etc
 
 ## Estadísticas
 
-- **Total prompts documentados:** 28
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (3), Despliegue (1)
+- **Total prompts documentados:** 29
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (3), Despliegue (1), Swagger (1)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026

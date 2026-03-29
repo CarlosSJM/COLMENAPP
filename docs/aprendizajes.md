@@ -305,12 +305,26 @@ DATABASE_URL, JWT_SECRET, CORS_ORIGIN, PORT - todas cambian entre dev y prod. Si
 
 ---
 
+### 8.5 Swagger protegido es mejor que Swagger publico o sin Swagger
+
+Sin Swagger, los evaluadores no pueden explorar la API. Con Swagger publico, cualquiera puede ver los endpoints. Con basic auth, solo quien tiene credenciales puede acceder. Es un equilibrio entre transparencia y seguridad.
+
+**Leccion:** Para proyectos academicos y demos, Swagger con basic auth es ideal: muestra profesionalidad sin exponer la API al mundo. Las credenciales se comparten con los evaluadores.
+
+### 8.6 Los wildcards de rutas cambian entre versiones de Express
+
+`/api/docs*` funciona en Express 4 pero falla en Express 5 (path-to-regexp v8). Un error silencioso que solo aparece al ejecutar, no al compilar.
+
+**Leccion:** Cuando una libreria falla con un error de path/routing, verificar la version de Express y path-to-regexp. Preferir arrays de rutas explicitas sobre wildcards.
+
+---
+
 ## 9. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 34 |
-| Prompts documentados | 28 |
+| Commits en feature branch | 36 |
+| Prompts documentados | 29 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
 | Endpoints API | 33 |
@@ -327,7 +341,8 @@ DATABASE_URL, JWT_SECRET, CORS_ORIGIN, PORT - todas cambian entre dev y prod. Si
 | CI/CD | GitHub Actions (tests) + auto-deploy (Vercel/Render) |
 | Documentos en docs/ | 22 |
 | Bundle size | ~1200KB (~360KB gzip) |
-| Aprendizajes documentados | 37 |
+| Swagger API docs | /api/docs (basic auth) |
+| Aprendizajes documentados | 39 |
 
 ---
 

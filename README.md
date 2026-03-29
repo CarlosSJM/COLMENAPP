@@ -541,6 +541,7 @@ erDiagram
 
 **Base URL:** `/api/v1`
 **Autenticación:** Bearer JWT en header `Authorization` (excepto register/login)
+**Swagger Docs:** `/api/docs` (credenciales: `colmenapp` / `1234colmenapp`)
 
 ### Auth (3 endpoints)
 

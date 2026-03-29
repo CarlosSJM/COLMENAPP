@@ -74,9 +74,44 @@ npm run dev
 |----------|--------|
 | Frontend (Vite) | 5173 |
 | Backend (NestJS) | 3000 |
-| PostgreSQL | 5432 |
+| PostgreSQL | 5434 |
+| Swagger API Docs | 3000/api/docs |
 
-## Despliegue (Futuro)
+## Swagger API Documentation
+
+### Acceso
+- **URL local:** http://localhost:3000/api/docs
+- **URL produccion:** https://[backend-url]/api/docs
+- **Credenciales:** `colmenapp` / `1234colmenapp`
+
+### Que incluye
+- Documentacion interactiva de los 33 endpoints
+- Agrupados por tags: Auth, Apiaries, Hives, Inspections, Production, Tasks, Dashboard
+- Boton "Authorize" para introducir JWT token y probar endpoints protegidos
+- Schemas de DTOs auto-generados desde class-validator
+
+### Como probar un endpoint protegido
+1. Abrir `/api/docs` e introducir credenciales basic auth
+2. Ejecutar POST `/api/v1/auth/login` con email y password
+3. Copiar el `access_token` de la respuesta
+4. Click en boton "Authorize" (candado) arriba a la derecha
+5. Pegar el token en el campo "Value" (sin "Bearer ", solo el token)
+6. Click "Authorize"
+7. Ahora todos los endpoints protegidos funcionan
+
+### Variables de entorno
+```env
+SWAGGER_USER=colmenapp          # Usuario basic auth (default: colmenapp)
+SWAGGER_PASSWORD=1234colmenapp  # Password basic auth (default: 1234colmenapp)
+```
+
+### Implementacion tecnica
+- Libreria: `@nestjs/swagger` (auto-genera desde decoradores)
+- Proteccion: `express-basic-auth` (basic auth HTTP)
+- Rutas protegidas: `/api/docs`, `/api/docs-json`, `/api/docs-yaml`
+- Decoradores usados: `@ApiTags()`, `@ApiBearerAuth('JWT')`
+
+## Despliegue
 
 Pendiente de definir para produccion. Opciones consideradas:
 - Frontend: Vercel / Netlify
