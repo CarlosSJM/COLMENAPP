@@ -608,6 +608,30 @@ vamos a por los test unitarios
 - Redacción de historias de usuario y tickets de trabajo
 - Validación iterativa punto por punto con el usuario
 
+### PR #2: Código funcional (Entrega 2)
+
+**Contexto:** Segunda entrega del proyecto final del máster AI4Devs.
+
+**URL:** https://github.com/CarlosSJM/COLMENAPP/pull/2
+
+**Rama:** `feature/feature-entrega2-CSM` → `main`
+
+**Contenido (32 commits):**
+- Backend NestJS: 7 módulos, 33 endpoints, JWT auth, ownership isolation
+- Frontend React: 9 pantallas, CRUD completo, QR scanner/generator, PWA
+- Testing: 58 tests (34 e2e + 24 unitarios)
+- Seguridad: 3 vulnerabilidades corregidas
+- Spec Kit: constitution, spec, plan, tasks para backend y frontend
+- Documentación: 21 documentos, 27 prompts, 33 aprendizajes
+
+**Proceso con IA:**
+- Diseño comparativo Figma vs documentación (9 decisiones)
+- Implementación backend completa con Claude Code
+- Integración de componentes Figma exportados
+- Revisión de seguridad con checklist OWASP
+- Testing e2e y unitario guiado por prioridades
+- Documentación iterativa (prompts, aprendizajes, features)
+
 ---
 
 ## Herramientas de IA Utilizadas
