@@ -269,12 +269,20 @@ La configuracion de CORS para produccion se documento inmediatamente despues de 
 
 ---
 
+### 7.8 Los unit tests con mocks complementan los e2e, no los reemplazan
+
+Los tests e2e descubrieron que las tareas generales no se listaban (bug de ownership). Los unit tests verifican que la logica de hive_count y last_inspection se ejecuta correctamente. Ambos son necesarios: e2e para integracion real, unitarios para logica aislada.
+
+**Leccion:** e2e primero (encuentran bugs reales), unitarios despues (verifican reglas de dominio con precision). No elegir uno u otro, usar ambos con propositos distintos.
+
+---
+
 ## 8. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 27 |
-| Prompts documentados | 26 |
+| Commits en feature branch | 29 |
+| Prompts documentados | 27 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
 | Endpoints API | 33 |
@@ -284,11 +292,12 @@ La configuracion de CORS para produccion se documento inmediatamente despues de 
 | Fixes UI (Tailwind v4) | 7 |
 | Entidades con CRUD completo | 5 (Apiarios, Colmenas, Inspecciones, Produccion, Tareas) |
 | Tests e2e backend | 34 (4 suites) |
+| Tests unitarios backend | 24 (4 suites) |
 | Fases completadas | 5 en progreso |
 | Vulnerabilidades encontradas/corregidas | 3 |
-| Documentos en docs/ | 20 |
+| Documentos en docs/ | 21 |
 | Bundle size | ~1200KB (~360KB gzip) |
-| Aprendizajes documentados | 32 |
+| Aprendizajes documentados | 33 |
 
 ---
 

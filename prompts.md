@@ -13,7 +13,7 @@
 9. [Implementación Frontend](#9-implementación-frontend) (3 prompts)
 10. [Fase 4: QR + PWA](#10-fase-4-qr--pwa) (1 prompt)
 11. [Fase 4b: Edicion y Eliminacion](#11-fase-4b-edicion-y-eliminacion) (2 prompts)
-12. [Fase 5: Testing](#12-fase-5-testing) (2 prompts)
+12. [Fase 5: Testing](#12-fase-5-testing) (3 prompts)
 13. [Historias de usuario](#13-historias-de-usuario) (pendiente)
 14. [Tickets de trabajo](#14-tickets-de-trabajo) (pendiente)
 15. [Pull requests](#15-pull-requests)
@@ -553,6 +553,30 @@ si [continuar con revision de seguridad]
 
 ---
 
+### Prompt 3: Tests unitarios backend
+
+**Contexto:** Tests de logica de negocio aislada con mocks de PrismaService.
+
+```
+vamos a por los test unitarios
+```
+
+**Resultado clave:**
+
+| Suite | Tests | Logica validada |
+|-------|-------|-----------------|
+| AuthService | 7 | Hash bcrypt, duplicado, login ok/fail, profile sin hash |
+| ApiariesService | 6 | Filtro user_id, ownership check, create con user_id |
+| HivesService | 6 | hive_count sync (create/delete), apiary ownership, findByCode |
+| InspectionsService | 5 | last_inspection update, hive ownership, filtro usuario |
+
+> 24 tests, 4 suites, ~1s ejecucion. Sin BD, sin red, solo mocks.
+> Documentacion en docs/testing/unit-backend.md.
+
+**Impacto:** Logica de dominio (hive_count, last_inspection, ownership) verificada unitariamente.
+
+---
+
 ## 13. Historias de Usuario
 
 *Prompts pendientes de documentar durante el desarrollo*
@@ -598,7 +622,7 @@ si [continuar con revision de seguridad]
 
 ## Estadísticas
 
-- **Total prompts documentados:** 26
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (2)
+- **Total prompts documentados:** 27
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (3)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026
