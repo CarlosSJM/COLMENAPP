@@ -14,7 +14,7 @@
 10. [Fase 4: QR + PWA](#10-fase-4-qr--pwa) (1 prompt)
 11. [Fase 4b: Edicion y Eliminacion](#11-fase-4b-edicion-y-eliminacion) (2 prompts)
 12. [Fase 5: Testing](#12-fase-5-testing) (3 prompts)
-13. [Despliegue e Infraestructura](#13-despliegue-e-infraestructura) (2 prompts)
+13. [Despliegue e Infraestructura](#13-despliegue-e-infraestructura) (3 prompts)
 14. [Swagger API Documentation](#14-swagger-api-documentation) (1 prompt)
 15. [Historias de usuario](#15-historias-de-usuario) (pendiente)
 14. [Tickets de trabajo](#14-tickets-de-trabajo) (pendiente)
@@ -634,11 +634,42 @@ vamos a desglosar los pasos 1 del despliegue
 | Seed duplica datos en cada deploy | `create` en vez de check | Seed skip si usuario demo ya existe |
 | Node 22 por defecto | Comportamiento diferente a dev (Node 20) | Agregar `.node-version` con `20.19.3` |
 
-**URLs de produccion:**
-- Backend: https://colmenapp.onrender.com
+**URLs de produccion (backend):**
+- API: https://colmenapp.onrender.com
 - Swagger: https://colmenapp.onrender.com/api/docs (colmenapp / 1234colmenapp)
 
-**Impacto:** Backend desplegado y accesible publicamente. 6 problemas de deploy resueltos iterativamente.
+**Impacto:** Backend desplegado y accesible publicamente. 6 problemas de deploy resueltos.
+
+---
+
+### Prompt 3: Despliegue Frontend en Vercel
+
+**Contexto:** Desplegar el frontend React en Vercel conectado al backend en Render.
+
+```
+vayamos al despliegue del front en vercel
+```
+
+**Problemas encontrados y resueltos:**
+
+| Problema | Causa | Fix |
+|----------|-------|-----|
+| Vercel no encuentra directorio `frontend/` | Rama default en GitHub era `main`, no tenia el codigo | Cambiar default branch a `finalproject-CSM` |
+| Sigue mostrando `main` | Vercel cachea la rama del momento de importacion | Eliminar proyecto en Vercel y reimportar |
+| CORS bloqueado tras deploy | Backend dormido (Render free, 15min sleep) | Despertar backend visitando la URL directamente, verificar CORS_ORIGIN exacto |
+
+**Configuracion Vercel:**
+- Root Directory: `frontend`
+- Framework: Vite
+- Env var: `VITE_API_URL=https://colmenapp.onrender.com/api/v1`
+- Branch: `finalproject-CSM` (default en GitHub)
+
+**URLs de produccion:**
+- Frontend: https://colmenapp-4gk7s4z9e-carlossjms-projects.vercel.app
+- Backend: https://colmenapp.onrender.com
+- Swagger: https://colmenapp.onrender.com/api/docs
+
+**Impacto:** App completa desplegada. Frontend + Backend + BD. Coste: 0€/mes.
 
 ---
 
@@ -738,7 +769,7 @@ si montemos un swagger con user colmenapp contraseña 1234colmenapp
 
 ## Estadísticas
 
-- **Total prompts documentados:** 30
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (3), Despliegue (2), Swagger (1)
+- **Total prompts documentados:** 31
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (3), Despliegue (3), Swagger (1)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026

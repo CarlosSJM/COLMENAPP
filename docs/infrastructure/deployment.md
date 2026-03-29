@@ -115,11 +115,18 @@ node dist/src/main.js
 
 ### Paso 2: Configurar Vercel (Frontend)
 
+**IMPORTANTE:** Antes de importar en Vercel, la rama default en GitHub debe ser la que contiene el codigo. Vercel cachea la rama default al importar y no se puede cambiar despues.
+
 **2.1 Crear cuenta en Vercel**
 - Ir a https://vercel.com
 - Registrarse con GitHub
 
-**2.2 Importar proyecto**
+**2.2 Verificar rama default en GitHub**
+- GitHub → repo → Settings → Branches → Default branch
+- Debe ser la rama con el codigo del frontend (ej: `finalproject-CSM`)
+- Si no, cambiarla antes de importar en Vercel
+
+**2.3 Importar proyecto**
 - Dashboard → Add New → Project
 - Importar repo: `CarlosSJM/COLMENAPP`
 - Configuracion:
@@ -128,16 +135,24 @@ node dist/src/main.js
   - Build Command: `npm run build` (auto-detectado)
   - Output Directory: `dist` (auto-detectado)
 
-**2.3 Variables de entorno en Vercel**
+**2.4 Variables de entorno en Vercel**
 - Settings → Environment Variables:
 
 ```env
-VITE_API_URL=https://colmenapp-api.onrender.com/api/v1
+VITE_API_URL=https://colmenapp.onrender.com/api/v1
 ```
 
-**2.4 Anotar URL**
-- Vercel asignara una URL tipo `colmenapp-xxx.vercel.app`
-- Volver a Render y actualizar `CORS_ORIGIN` con esta URL exacta
+**2.5 URL de produccion**
+- URL: https://colmenapp-4gk7s4z9e-carlossjms-projects.vercel.app
+- Actualizar `CORS_ORIGIN` en Render con esta URL exacta (sin barra final)
+
+**Problemas resueltos:**
+
+| Problema | Fix |
+|----------|-----|
+| Vercel no encuentra `frontend/` | Cambiar default branch en GitHub a la rama con codigo |
+| Vercel sigue mostrando `main` | Eliminar proyecto en Vercel y reimportar |
+| CORS bloqueado tras deploy | Backend dormido (Render free), despertar visitando URL directamente |
 
 ---
 

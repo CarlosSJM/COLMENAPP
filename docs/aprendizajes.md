@@ -335,14 +335,32 @@ Sin acceso a shell, no se pueden ejecutar comandos ad-hoc (seed, migraciones man
 
 **Leccion:** Antes de elegir un hosting, verificar que el plan free incluye las herramientas que necesitas. Si no tiene shell, todo comando debe ser automatizable en el pipeline de build.
 
+### 8.10 Vercel cachea la rama default al importar - no se puede cambiar despues
+
+Al importar un repo en Vercel, cachea la rama default de GitHub en ese momento. Si luego cambias la rama default en GitHub, Vercel sigue usando la original. La unica solucion es eliminar el proyecto en Vercel y reimportarlo.
+
+**Leccion:** Antes de importar en Vercel, asegurarse de que la rama default en GitHub es la que contiene el codigo a desplegar. Si trabajas en feature branches, cambiar la default antes de importar.
+
+### 8.11 El backend dormido de Render causa falsos errores de CORS
+
+Cuando el backend de Render Free esta dormido (15min inactividad), las peticiones preflight OPTIONS no reciben respuesta. El navegador interpreta esto como error CORS, no como timeout. El mensaje "No Access-Control-Allow-Origin header" es enganoso.
+
+**Leccion:** Si ves errores CORS en produccion con Render Free, primero verifica que el backend esta despierto visitando su URL directamente. Espera ~30 segundos a que responda. Luego reintenta desde el frontend.
+
+### 8.12 Desplegar frontend y backend por separado es mas flexible que un monorepo deploy
+
+Frontend en Vercel y backend en Render se despliegan independientemente. Si hay un bug en frontend, se arregla sin tocar el backend (y viceversa). Los deploys son mas rapidos porque cada plataforma solo construye su parte.
+
+**Leccion:** Para proyectos fullstack con monorepo, desplegar frontend y backend en plataformas separadas con Root Directory diferente. La complejidad extra de configurar CORS y env vars se compensa con deploys mas rapidos y rollbacks independientes.
+
 ---
 
 ## 9. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 40 |
-| Prompts documentados | 30 |
+| Commits en feature branch | 42 |
+| Prompts documentados | 31 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
 | Endpoints API | 33 |
@@ -360,8 +378,9 @@ Sin acceso a shell, no se pueden ejecutar comandos ad-hoc (seed, migraciones man
 | Documentos en docs/ | 22 |
 | Bundle size | ~1200KB (~360KB gzip) |
 | Swagger API docs | /api/docs (basic auth) |
-| Problemas de deploy resueltos | 6 |
-| Aprendizajes documentados | 42 |
+| Problemas de deploy resueltos | 9 (6 Render + 3 Vercel) |
+| Deploy coste | 0€/mes |
+| Aprendizajes documentados | 45 |
 
 ---
 
