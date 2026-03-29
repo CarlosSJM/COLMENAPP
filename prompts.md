@@ -14,7 +14,7 @@
 10. [Fase 4: QR + PWA](#10-fase-4-qr--pwa) (1 prompt)
 11. [Fase 4b: Edicion y Eliminacion](#11-fase-4b-edicion-y-eliminacion) (2 prompts)
 12. [Fase 5: Testing](#12-fase-5-testing) (3 prompts)
-13. [Despliegue e Infraestructura](#13-despliegue-e-infraestructura) (1 prompt)
+13. [Despliegue e Infraestructura](#13-despliegue-e-infraestructura) (2 prompts)
 14. [Swagger API Documentation](#14-swagger-api-documentation) (1 prompt)
 15. [Historias de usuario](#15-historias-de-usuario) (pendiente)
 14. [Tickets de trabajo](#14-tickets-de-trabajo) (pendiente)
@@ -615,6 +615,33 @@ planificamos y como podriamos hacerlo ci/cd con github actions servidores etc
 
 ---
 
+### Prompt 2: Ejecucion del despliegue en Render
+
+**Contexto:** Desplegar el backend en Render Free con PostgreSQL.
+
+```
+vamos a desglosar los pasos 1 del despliegue
+```
+
+**Problemas encontrados y resueltos:**
+
+| Problema | Causa | Fix |
+|----------|-------|-----|
+| npm peer dependency conflict | @nestjs/swagger vs class-validator | Agregar `.npmrc` con `legacy-peer-deps=true` |
+| `nest: not found` en build | Render Node 22 omite devDependencies | Cambiar a `npm install --include=dev` |
+| `Cannot find dist/main.js` | nest build genera en `dist/src/` no `dist/` | Cambiar Start Command a `node dist/src/main.js` |
+| Sin shell en plan Free | No se puede ejecutar seed manualmente | Incluir `npx prisma db seed` en Build Command |
+| Seed duplica datos en cada deploy | `create` en vez de check | Seed skip si usuario demo ya existe |
+| Node 22 por defecto | Comportamiento diferente a dev (Node 20) | Agregar `.node-version` con `20.19.3` |
+
+**URLs de produccion:**
+- Backend: https://colmenapp.onrender.com
+- Swagger: https://colmenapp.onrender.com/api/docs (colmenapp / 1234colmenapp)
+
+**Impacto:** Backend desplegado y accesible publicamente. 6 problemas de deploy resueltos iterativamente.
+
+---
+
 ## 14. Swagger API Documentation
 
 ### Prompt 1: Configurar Swagger con autenticacion
@@ -711,7 +738,7 @@ si montemos un swagger con user colmenapp contraseña 1234colmenapp
 
 ## Estadísticas
 
-- **Total prompts documentados:** 29
-- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (3), Despliegue (1), Swagger (1)
+- **Total prompts documentados:** 30
+- **Categorías:** Producto (3), Arquitectura (3), Diseño UI/UX (4), Modelo de datos (2), Infraestructura (1), Documentación (1), Backend (2), Spec Kit (2), Frontend (3), QR+PWA (1), Edit/Delete (2), Testing (3), Despliegue (2), Swagger (1)
 - **Fecha inicio:** Enero 2026
 - **Última actualización:** Marzo 2026

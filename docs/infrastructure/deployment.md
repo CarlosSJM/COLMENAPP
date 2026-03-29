@@ -82,10 +82,34 @@ PORT=10000
 - `CORS_ORIGIN`: Se actualizara cuando tengamos la URL de Vercel
 - `PORT`: Render usa 10000 por defecto, no 3000
 
-**1.5 Seed inicial (solo primera vez)**
-- Ir a Shell en el Web Service de Render
-- Ejecutar: `npx prisma db seed`
-- O incluirlo en el Build Command: `npm install && npx prisma migrate deploy && npx prisma generate && npx prisma db seed && npm run build`
+**1.5 Seed inicial**
+Incluido en el Build Command. El seed es idempotente: si el usuario demo ya existe, se salta.
+Shell no disponible en plan Free de Render.
+
+**Build Command final:**
+```
+npm install --include=dev && npx prisma migrate deploy && npx prisma generate && npm run build && npx prisma db seed
+```
+
+**Start Command:**
+```
+node dist/src/main.js
+```
+
+**1.6 URL de produccion**
+- Backend: https://colmenapp.onrender.com
+- Swagger: https://colmenapp.onrender.com/api/docs
+
+**Problemas resueltos durante el deploy:**
+
+| Problema | Fix |
+|----------|-----|
+| Peer dependency conflict | `.npmrc` con `legacy-peer-deps=true` |
+| `nest: not found` | `npm install --include=dev` |
+| `dist/main.js` not found | Start Command: `node dist/src/main.js` |
+| No shell en plan Free | Seed en Build Command |
+| Seed duplica datos | Skip si usuario demo ya existe |
+| Node 22 por defecto | `.node-version` con `20.19.3` |
 
 ---
 

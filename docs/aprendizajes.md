@@ -317,14 +317,32 @@ Sin Swagger, los evaluadores no pueden explorar la API. Con Swagger publico, cua
 
 **Leccion:** Cuando una libreria falla con un error de path/routing, verificar la version de Express y path-to-regexp. Preferir arrays de rutas explicitas sobre wildcards.
 
+### 8.7 El primer deploy siempre falla (y esta bien)
+
+El despliegue en Render requirio 5 iteraciones: peer deps, devDependencies, path de dist, shell no disponible, seed duplicando datos. Cada error se resolvio en minutos con un fix y push.
+
+**Leccion:** Planificar tiempo para problemas de deploy. El entorno de produccion siempre difiere del local (version de Node, instalacion de deps, paths, permisos). Cada fix es un aprendizaje que se documenta para el siguiente proyecto.
+
+### 8.8 El seed debe ser idempotente y no destructivo
+
+Primer intento: el seed borraba y recreaba datos del usuario demo en cada deploy (destruiria datos de produccion). Solucion: skip si el usuario ya existe. Asi el seed solo corre la primera vez.
+
+**Leccion:** Si el seed se ejecuta en el pipeline de deploy, debe ser seguro de ejecutar N veces sin perder datos. `upsert` o `findFirst + skip` son patrones seguros. `delete + create` es peligroso en produccion.
+
+### 8.9 El plan Free de Render no tiene shell - planificar para ello
+
+Sin acceso a shell, no se pueden ejecutar comandos ad-hoc (seed, migraciones manuales). Todo debe estar en el Build Command o Start Command.
+
+**Leccion:** Antes de elegir un hosting, verificar que el plan free incluye las herramientas que necesitas. Si no tiene shell, todo comando debe ser automatizable en el pipeline de build.
+
 ---
 
 ## 9. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
-| Commits en feature branch | 36 |
-| Prompts documentados | 29 |
+| Commits en feature branch | 40 |
+| Prompts documentados | 30 |
 | Modelos de BD | 6 |
 | Enums de BD | 7 |
 | Endpoints API | 33 |
@@ -342,7 +360,8 @@ Sin Swagger, los evaluadores no pueden explorar la API. Con Swagger publico, cua
 | Documentos en docs/ | 22 |
 | Bundle size | ~1200KB (~360KB gzip) |
 | Swagger API docs | /api/docs (basic auth) |
-| Aprendizajes documentados | 39 |
+| Problemas de deploy resueltos | 6 |
+| Aprendizajes documentados | 42 |
 
 ---
 
