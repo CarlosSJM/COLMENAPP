@@ -32,7 +32,8 @@ docs/
 │   ├── tasks.md                 Gestion de tareas
 │   ├── dashboard.md             Dashboard y estadisticas
 │   ├── offline-sync.md          Offline/Sync y PWA
-│   └── crud-edit-delete.md      Edicion y eliminacion de registros
+│   ├── crud-edit-delete.md      Edicion y eliminacion de registros
+│   └── backlog-futuro.md       Tickets futuros (perfil, historicos, soft delete, audit log)
 │
 ├── testing/                     Testing y seguridad
 │   ├── e2e-backend.md           Tests E2E backend (34 tests, manual de ejecucion)
