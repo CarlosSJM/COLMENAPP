@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import type { Hive, Inspection, Production, Task } from '../../types'
 import {
   adaptHive,
   adaptHives,
@@ -10,30 +11,32 @@ import {
   adaptTasks,
 } from '../adapters'
 
+// Helper: partial objects cast to full types (tests only need adapter-relevant fields)
+const hive = (partial: Partial<Hive>) => partial as Hive
+const inspection = (partial: Partial<Inspection>) => partial as Inspection
+const production = (partial: Partial<Production>) => partial as Production
+const task = (partial: Partial<Task>) => partial as Task
+
 describe('adaptHive', () => {
   it('extracts apiary_name from nested apiary object', () => {
-    const hive = { id: '1', name: 'Colmena 1', apiary: { name: 'Apiario Norte' } }
-    const result = adaptHive(hive)
+    const result = adaptHive(hive({ id: '1', name: 'Colmena 1', apiary: { name: 'Apiario Norte' } }))
     expect(result.apiary_name).toBe('Apiario Norte')
     expect(result.id).toBe('1')
     expect(result.name).toBe('Colmena 1')
   })
 
   it('returns empty string when apiary is null', () => {
-    const hive = { id: '1', name: 'Colmena 1', apiary: null }
-    const result = adaptHive(hive)
+    const result = adaptHive(hive({ id: '1', name: 'Colmena 1', apiary: null as unknown as Hive['apiary'] }))
     expect(result.apiary_name).toBe('')
   })
 
   it('returns empty string when apiary is undefined', () => {
-    const hive = { id: '1', name: 'Colmena 1' }
-    const result = adaptHive(hive)
+    const result = adaptHive(hive({ id: '1', name: 'Colmena 1' }))
     expect(result.apiary_name).toBe('')
   })
 
   it('preserves all original fields', () => {
-    const hive = { id: '1', code: 'H001', status: 'active', apiary: { name: 'Test' } }
-    const result = adaptHive(hive)
+    const result = adaptHive(hive({ id: '1', code: 'H001', status: 'active', apiary: { name: 'Test' } }))
     expect(result.id).toBe('1')
     expect(result.code).toBe('H001')
     expect(result.status).toBe('active')
@@ -43,8 +46,8 @@ describe('adaptHive', () => {
 describe('adaptHives', () => {
   it('adapts an array of hives', () => {
     const hives = [
-      { id: '1', apiary: { name: 'A' } },
-      { id: '2', apiary: { name: 'B' } },
+      hive({ id: '1', apiary: { name: 'A' } }),
+      hive({ id: '2', apiary: { name: 'B' } }),
     ]
     const result = adaptHives(hives)
     expect(result).toHaveLength(2)
@@ -59,14 +62,12 @@ describe('adaptHives', () => {
 
 describe('adaptInspection', () => {
   it('extracts hive_name from nested hive object', () => {
-    const inspection = { id: '1', hive: { name: 'Colmena 1' }, date: '2026-03-15' }
-    const result = adaptInspection(inspection)
+    const result = adaptInspection(inspection({ id: '1', hive: { name: 'Colmena 1' }, date: '2026-03-15' }))
     expect(result.hive_name).toBe('Colmena 1')
   })
 
   it('returns empty string when hive is null', () => {
-    const inspection = { id: '1', hive: null }
-    const result = adaptInspection(inspection)
+    const result = adaptInspection(inspection({ id: '1', hive: null as unknown as Inspection['hive'] }))
     expect(result.hive_name).toBe('')
   })
 })
@@ -74,8 +75,8 @@ describe('adaptInspection', () => {
 describe('adaptInspections', () => {
   it('adapts an array of inspections', () => {
     const inspections = [
-      { id: '1', hive: { name: 'H1' } },
-      { id: '2', hive: { name: 'H2' } },
+      inspection({ id: '1', hive: { name: 'H1' } }),
+      inspection({ id: '2', hive: { name: 'H2' } }),
     ]
     const result = adaptInspections(inspections)
     expect(result).toHaveLength(2)
@@ -86,42 +87,37 @@ describe('adaptInspections', () => {
 
 describe('adaptProduction', () => {
   it('extracts hive_name from nested hive object', () => {
-    const production = { id: '1', hive: { name: 'Colmena 3' }, honey_kg: 5.2 }
-    const result = adaptProduction(production)
+    const result = adaptProduction(production({ id: '1', hive: { name: 'Colmena 3' }, honey_kg: 5.2 }))
     expect(result.hive_name).toBe('Colmena 3')
     expect(result.honey_kg).toBe(5.2)
   })
 
   it('returns empty string when hive is null', () => {
-    const production = { id: '1', hive: null }
-    const result = adaptProduction(production)
+    const result = adaptProduction(production({ id: '1', hive: null as unknown as Production['hive'] }))
     expect(result.hive_name).toBe('')
   })
 })
 
 describe('adaptProductions', () => {
   it('adapts an array of productions', () => {
-    const prods = [{ id: '1', hive: { name: 'H1' } }]
+    const prods = [production({ id: '1', hive: { name: 'H1' } })]
     expect(adaptProductions(prods)[0].hive_name).toBe('H1')
   })
 })
 
 describe('adaptTask', () => {
   it('extracts hive_name from nested hive object', () => {
-    const task = { id: '1', title: 'Revisar', hive: { name: 'Colmena 1' } }
-    const result = adaptTask(task)
+    const result = adaptTask(task({ id: '1', title: 'Revisar', hive: { name: 'Colmena 1' } }))
     expect(result.hive_name).toBe('Colmena 1')
   })
 
   it('returns undefined when hive is null (general task)', () => {
-    const task = { id: '1', title: 'Comprar cera', hive: null }
-    const result = adaptTask(task)
+    const result = adaptTask(task({ id: '1', title: 'Comprar cera', hive: null }))
     expect(result.hive_name).toBeUndefined()
   })
 
   it('returns undefined when hive is missing', () => {
-    const task = { id: '1', title: 'Comprar cera' }
-    const result = adaptTask(task)
+    const result = adaptTask(task({ id: '1', title: 'Comprar cera' }))
     expect(result.hive_name).toBeUndefined()
   })
 })
@@ -129,8 +125,8 @@ describe('adaptTask', () => {
 describe('adaptTasks', () => {
   it('adapts mixed tasks (with and without hive)', () => {
     const tasks = [
-      { id: '1', hive: { name: 'H1' } },
-      { id: '2', hive: null },
+      task({ id: '1', hive: { name: 'H1' } }),
+      task({ id: '2', hive: null }),
     ]
     const result = adaptTasks(tasks)
     expect(result[0].hive_name).toBe('H1')

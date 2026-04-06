@@ -1,5 +1,5 @@
-// Mock data para desarrollo - tipos relajados hasta conectar con API real
-export const mockApiaries: any[] = [
+// Mock data de Figma - legacy, no se usa (componentes usan API real)
+export const mockApiaries: Record<string, unknown>[] = [
   {
     id: "1",
     name: "Apiario Norte",
@@ -31,7 +31,7 @@ export const mockApiaries: any[] = [
   },
 ];
 
-export const mockHives: any[] = [
+export const mockHives: Record<string, unknown>[] = [
   {
     id: "1",
     code: "AN-001",
@@ -118,7 +118,7 @@ export const mockHives: any[] = [
   },
 ];
 
-export const mockInspections: any[] = [
+export const mockInspections: Record<string, unknown>[] = [
   {
     id: "1",
     hive_id: "1",
@@ -203,7 +203,7 @@ export const mockInspections: any[] = [
   },
 ];
 
-export const mockProduction: any[] = [
+export const mockProduction: Record<string, unknown>[] = [
   {
     id: "1",
     hive_id: "1",
@@ -251,7 +251,7 @@ export const mockProduction: any[] = [
   },
 ];
 
-export const mockTasks: any[] = [
+export const mockTasks: Record<string, unknown>[] = [
   {
     id: "1",
     title: "Tratamiento contra varroa",

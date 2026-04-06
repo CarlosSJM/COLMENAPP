@@ -12,12 +12,13 @@ import { adaptProductions } from "../services/adapters";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
+import type { Production as ProductionType, Hive } from "../types";
 
 export function Production() {
-  const [productions, setProductions] = useState<any[]>([]);
-  const [hives, setHives] = useState<any[]>([]);
+  const [productions, setProductions] = useState<(ProductionType & { hive_name: string })[]>([]);
+  const [hives, setHives] = useState<Hive[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [deletingProduction, setDeletingProduction] = useState<any | null>(null);
+  const [deletingProduction, setDeletingProduction] = useState<(ProductionType & { hive_name: string }) | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { refreshPendingCount } = useAuth();
@@ -39,7 +40,7 @@ export function Production() {
 
   const chartData = useMemo(() => {
     const grouped = productions.reduce((acc, prod) => {
-      const existing = acc.find((item: any) => item.colmena === prod.hive_name);
+      const existing = acc.find((item) => item.colmena === prod.hive_name);
       if (existing) {
         existing.miel += prod.honey_kg;
         existing.cera += prod.wax_kg;

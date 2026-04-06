@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 
-export function useApiData<T>(fetchFn: () => Promise<T>, deps: any[] = []) {
+export function useApiData<T>(fetchFn: () => Promise<T>, deps: unknown[] = []) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

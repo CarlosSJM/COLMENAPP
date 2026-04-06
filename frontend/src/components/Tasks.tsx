@@ -14,13 +14,14 @@ import { adaptTasks } from "../services/adapters";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
+import type { Task, Hive } from "../types";
 
 export function Tasks() {
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [hives, setHives] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<(Task & { hive_name?: string })[]>([]);
+  const [hives, setHives] = useState<Hive[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<any | null>(null);
-  const [deletingTask, setDeletingTask] = useState<any | null>(null);
+  const [editingTask, setEditingTask] = useState<(Task & { hive_name?: string }) | null>(null);
+  const [deletingTask, setDeletingTask] = useState<(Task & { hive_name?: string }) | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
 
@@ -399,7 +400,7 @@ export function Tasks() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Ninguna (tarea general)</SelectItem>
-                    {hives.map((hive: any) => (<SelectItem key={hive.id} value={hive.id}>{hive.name}</SelectItem>))}
+                    {hives.map((hive) => (<SelectItem key={hive.id} value={hive.id}>{hive.name}</SelectItem>))}
                   </SelectContent>
                 </Select>
               </div>

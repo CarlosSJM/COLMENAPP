@@ -14,13 +14,14 @@ import { adaptInspections } from "../services/adapters";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
+import type { Inspection, Hive } from "../types";
 
 export function Inspections() {
-  const [inspections, setInspections] = useState<any[]>([]);
-  const [hives, setHives] = useState<any[]>([]);
+  const [inspections, setInspections] = useState<(Inspection & { hive_name: string })[]>([]);
+  const [hives, setHives] = useState<Hive[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [treatmentApplied, setTreatmentApplied] = useState(false);
-  const [deletingInspection, setDeletingInspection] = useState<any | null>(null);
+  const [deletingInspection, setDeletingInspection] = useState<(Inspection & { hive_name: string }) | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { refreshPendingCount } = useAuth();
@@ -135,11 +136,6 @@ export function Inspections() {
       loadData();
     } catch { toast.error("Error al eliminar inspección"); }
     finally { setIsDeleting(false); }
-    return;
-    setInspections([] as any);
-    setIsAddDialogOpen(false);
-    setTreatmentApplied(false);
-    toast.success("Inspección registrada exitosamente");
   };
 
   return (
@@ -372,8 +368,8 @@ export function Inspections() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge className={getBroodPatternColor(inspection.brood_pattern)}>
-                    {getBroodPatternLabel(inspection.brood_pattern)}
+                  <Badge className={getBroodPatternColor(inspection.brood_pattern ?? '')}>
+                    {getBroodPatternLabel(inspection.brood_pattern ?? '')}
                   </Badge>
                   <Badge className={getHealthStatusColor(inspection.health_status)}>
                     {inspection.health_status}
@@ -393,9 +389,9 @@ export function Inspections() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ThermometerSun className={`size-4 ${getTemperamentColor(inspection.temperament)}`} />
+                  <ThermometerSun className={`size-4 ${getTemperamentColor(inspection.temperament ?? '')}`} />
                   <span className="text-sm text-amber-700">
-                    {getTemperamentLabel(inspection.temperament)}
+                    {getTemperamentLabel(inspection.temperament ?? '')}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -414,7 +410,7 @@ export function Inspections() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
-                  <Bug className={`size-4 ${inspection.varroa_count > 10 ? "text-red-600" : "text-amber-600"}`} />
+                  <Bug className={`size-4 ${(inspection.varroa_count ?? 0) > 10 ? "text-red-600" : "text-amber-600"}`} />
                   <span className="text-sm text-amber-700">
                     Varroa: {inspection.varroa_count}
                   </span>

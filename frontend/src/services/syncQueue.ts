@@ -59,7 +59,7 @@ export async function processQueue(): Promise<{ success: number; failed: number 
 
 // Execute a single queued operation against the API
 async function executeOperation(entry: SyncQueueEntry): Promise<void> {
-  const { entity, operation, entityId, payload } = entry;
+  const { entity, operation, entityId, payload = {} } = entry;
 
   const endpoints: Record<string, Record<string, () => Promise<unknown>>> = {
     apiaries: {

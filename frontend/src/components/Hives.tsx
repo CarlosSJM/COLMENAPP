@@ -17,16 +17,17 @@ import { QRScanner } from "./QRScanner";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
+import type { Hive, Apiary } from "../types";
 
 export function Hives() {
   const { apiaryId } = useParams();
   const navigate = useNavigate();
-  const [hives, setHives] = useState<any[]>([]);
-  const [apiaries, setApiaries] = useState<any[]>([]);
-  const [selectedHive, setSelectedHive] = useState<any | null>(null);
+  const [hives, setHives] = useState<(Hive & { apiary_name: string })[]>([]);
+  const [apiaries, setApiaries] = useState<Apiary[]>([]);
+  const [selectedHive, setSelectedHive] = useState<(Hive & { apiary_name: string }) | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingHive, setEditingHive] = useState<any | null>(null);
-  const [deletingHive, setDeletingHive] = useState<any | null>(null);
+  const [editingHive, setEditingHive] = useState<(Hive & { apiary_name: string }) | null>(null);
+  const [deletingHive, setDeletingHive] = useState<(Hive & { apiary_name: string }) | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [qrModalData, setQrModalData] = useState<{
     isOpen: boolean;
@@ -55,7 +56,7 @@ export function Hives() {
   const filteredHives = hives;
 
   const currentApiary = apiaryId
-    ? apiaries.find((a: any) => a.id === apiaryId)
+    ? apiaries.find((a) => a.id === apiaryId)
     : null;
 
   const getStatusColor = (status: string) => {
@@ -112,7 +113,7 @@ export function Hives() {
     } catch { toast.error("Error al crear colmena"); }
   };
 
-  const handleShowQR = (hive: any) => {
+  const handleShowQR = (hive: Hive & { apiary_name: string }) => {
     setQrModalData({
       isOpen: true,
       hiveCode: hive.code,
@@ -354,13 +355,13 @@ export function Hives() {
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2 text-sm text-amber-700">
                 <Users className="size-4" />
-                <span>{hive.population.toLocaleString()} abejas • {hive.frames} cuadros</span>
+                <span>{(hive.population ?? 0).toLocaleString()} abejas • {hive.frames ?? 0} cuadros</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-amber-700">
                 <Calendar className="size-4" />
                 <span>
                   Última inspección:{" "}
-                  {new Date(hive.last_inspection).toLocaleDateString("es-ES")}
+                  {hive.last_inspection ? new Date(hive.last_inspection).toLocaleDateString("es-ES") : "Sin inspecciones"}
                 </span>
               </div>
               <div className="pt-2 border-t border-amber-100">
@@ -438,7 +439,7 @@ export function Hives() {
                 </div>
                 <div>
                   <Label className="text-amber-700">Población</Label>
-                  <p className="text-amber-900">{selectedHive.population.toLocaleString()} abejas</p>
+                  <p className="text-amber-900">{(selectedHive.population ?? 0).toLocaleString()} abejas</p>
                 </div>
               </div>
 
@@ -457,21 +458,21 @@ export function Hives() {
                 <div>
                   <Label className="text-amber-700">Instalada</Label>
                   <p className="text-amber-900">
-                    {new Date(selectedHive.installed_at).toLocaleDateString("es-ES", {
+                    {selectedHive.installed_at ? new Date(selectedHive.installed_at).toLocaleDateString("es-ES", {
                       day: "numeric",
                       month: "long",
                       year: "numeric",
-                    })}
+                    }) : "No registrada"}
                   </p>
                 </div>
                 <div>
                   <Label className="text-amber-700">Última Inspección</Label>
                   <p className="text-amber-900">
-                    {new Date(selectedHive.last_inspection).toLocaleDateString("es-ES", {
+                    {selectedHive.last_inspection ? new Date(selectedHive.last_inspection).toLocaleDateString("es-ES", {
                       day: "numeric",
                       month: "long",
                       year: "numeric",
-                    })}
+                    }) : "Sin inspecciones"}
                   </p>
                 </div>
               </div>

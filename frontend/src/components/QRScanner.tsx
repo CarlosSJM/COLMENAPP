@@ -36,8 +36,8 @@ export function QRScanner({ isOpen, onClose, onScan }: QRScannerProps) {
           },
           () => {} // ignore scan failures (no QR found yet)
         );
-      } catch (err: any) {
-        setError(err?.message || "No se pudo acceder a la cámara");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "No se pudo acceder a la cámara");
       }
     };
 

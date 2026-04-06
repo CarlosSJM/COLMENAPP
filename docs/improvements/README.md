@@ -18,7 +18,7 @@ El feedback destaca:
 | T2 | [npm audit](./T2-npm-audit.md) | 30min-1h | Bajo-Medio | **Completada** |
 | T3 | [Testing frontend](./T3-testing-frontend.md) | 4-6h | Alto | **Completada** |
 | T4 | [Offline-first completo](./T4-offline-first.md) | 8-12h | **Muy alto** | **Completada** |
-| T5 | [Tipado estricto frontend](./T5-tipado-estricto.md) | 3-5h | Medio | Pendiente |
+| T5 | [Tipado estricto frontend](./T5-tipado-estricto.md) | 3-5h | Medio | **Completada** |
 | T6 | [Coherencia documentacion](./T6-coherencia-docs.md) | 1-2h | Bajo | Pendiente |
 
 **Orden recomendado**: T1 > T2 > T3 > T4 > T5 > T6

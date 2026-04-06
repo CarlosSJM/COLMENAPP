@@ -40,7 +40,31 @@ Mejorar el tipado TypeScript del frontend eliminando los 29 usos de `: any` y cr
 - [ ] Verificar que la app funciona correctamente tras los cambios
 - [ ] Considerar activar `strict: true` en tsconfig.json si no esta
 
+## Resultado
+
+- **29 `: any` eliminados** → 0 restantes en todo el frontend
+- **10 `as any` mantenidos** en `offlineStore.ts` (justificados, ver abajo)
+- **8 null-checks** añadidos en componentes (campos opcionales: population, installed_at, last_inspection, brood_pattern, temperament, varroa_count)
+- **Dead code eliminado** en Inspections.tsx (4 lineas inalcanzables post-return)
+- `strict: true` ya estaba activo en tsconfig.app.json
+- tsc compila limpio, 56/56 tests pasan, build OK
+
+### Justificacion de los 10 `as any` en offlineStore.ts
+
+Los 10 `as any` estan en operaciones `db.<table>.put(temp as any)` y `db.<table>.update(id, data as any)`. Son necesarios porque:
+
+1. **`put(temp as any)`**: Los objetos temporales offline se construyen con `{ ...data, id: tempId, created_at: new Date().toISOString() }`. Dexie espera el tipo completo de la entidad (ej: `Hive` con todos los campos), pero el objeto temporal solo tiene los campos del formulario + campos generados. Es imposible construir un `Hive` completo sin los datos que el backend generaria (como relaciones `apiary: { name }`).
+
+2. **`update(id, data as any)`**: Dexie tipifica `update()` con `UpdateSpec<T>` que requiere que cada valor sea del tipo exacto del campo. Los datos de formularios llegan como `Record<string, unknown>` (dinamicos por naturaleza). Crear tipos intermedios para cada combinacion de campos editables seria over-engineering.
+
+**Por que es aceptable:**
+- Los datos se validan en el backend cuando se sincronizan (online)
+- Son solo 10 puntos de frontera Dexie ↔ datos dinamicos
+- El resto del frontend (29 `: any`) SI se ha tipado estrictamente
+
+**Referencia:** Aprendizaje 10.7 en `aprendizajes.md`
+
 ## Documentar en
 
-- `docs/aprendizajes.md` - aprendizaje sobre tipado estricto en React/TS
+- `docs/aprendizajes.md` - aprendizaje 10.9 sobre tipado estricto y null safety
 - `prompts.md` - registrar prompt utilizado

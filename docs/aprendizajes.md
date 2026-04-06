@@ -411,7 +411,13 @@ El evento `window.addEventListener('online', syncNow)` procesa la cola automatic
 
 **Leccion:** La sincronizacion automatica al detectar conexion es la pieza mas critica del offline-first. Sin ella, el usuario tendria que recordar sincronizar manualmente, lo que nadie hace. El boton manual es complementario, no primario.
 
-### 10.9 Las vulnerabilidades en devDependencies no afectan produccion
+### 10.9 Tipar retroactivamente expone bugs reales de null safety
+
+Al reemplazar `any[]` por tipos estrictos (`Hive[]`, `Inspection[]`), TypeScript detecto 8 accesos a campos opcionales sin null-check (`hive.population`, `hive.last_inspection`, `inspection.brood_pattern`). Estos eran bugs reales: si el backend devuelve `null`, la UI crashearia con `.toLocaleString() of undefined`.
+
+**Leccion:** El tipado estricto no es solo "limpiar codigo". Cada `: any` eliminado es un null-check que TS puede validar. Los campos opcionales del schema (`population?`, `installed_at?`) deben tratarse con `??` o ternarios en la UI.
+
+### 10.10 Las vulnerabilidades en devDependencies no afectan produccion
 
 De las 10 vulnerabilidades restantes en el backend, 6 estan en devDependencies (@nestjs/cli, jest, eslint). Estas herramientas no se ejecutan en produccion ni se incluyen en el bundle.
 
@@ -446,7 +452,7 @@ De las 10 vulnerabilidades restantes en el backend, 6 estan en devDependencies (
 | Problemas de deploy resueltos | 9 (6 Render + 3 Vercel) |
 | Deploy coste | 0€/mes |
 | Verificacion post-deploy | 11 checks pasados |
-| Aprendizajes documentados | 55 |
+| Aprendizajes documentados | 56 |
 
 ---
 

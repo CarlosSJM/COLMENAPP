@@ -176,7 +176,7 @@ Derivadas del feedback de la correccion. Detalle en `docs/improvements/README.md
 | T2: npm audit | 30min-1h | Bajo-Medio | **Completada** |
 | T3: Testing frontend (Vitest + RTL) | 4-6h | Alto | **Completada** |
 | T4: Offline-first (Dexie.js + sync) | 8-12h | Muy alto | **Completada** |
-| T5: Tipado estricto (eliminar any) | 3-5h | Medio | Pendiente |
+| T5: Tipado estricto (eliminar any) | 3-5h | Medio | **Completada** |
 | T6: Coherencia documentacion | 1-2h | Bajo | Pendiente |
 
 ### Tareas Futuras (Post-MVP)
