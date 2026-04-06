@@ -31,7 +31,7 @@ export async function processQueue(): Promise<{ success: number; failed: number 
   const pending = await db.syncQueue
     .where('status')
     .anyOf('pending', 'failed')
-    .and((entry) => entry.retries < MAX_RETRIES)
+    .and((entry: SyncQueueEntry) => entry.retries < MAX_RETRIES)
     .sortBy('timestamp');
 
   let success = 0;

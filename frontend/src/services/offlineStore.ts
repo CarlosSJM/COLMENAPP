@@ -2,6 +2,7 @@ import { db } from './db';
 import { api } from './api';
 import { enqueue } from './syncQueue';
 import { v4Fallback } from './uuid';
+import type { Hive, Task } from '../types';
 
 // Cache API responses in IndexedDB after successful fetch
 async function cacheAndReturn<T extends { id: string }>(
@@ -230,14 +231,14 @@ export const offlineApi = {
       const tasks = await db.tasks.toArray();
       return {
         total_hives: hives.length,
-        active_hives: hives.filter(h => h.status === 'active').length,
-        inactive_hives: hives.filter(h => h.status === 'inactive').length,
-        quarantine_hives: hives.filter(h => h.status === 'quarantine').length,
-        lost_hives: hives.filter(h => h.status === 'lost').length,
+        active_hives: hives.filter((h: Hive) => h.status === 'active').length,
+        inactive_hives: hives.filter((h: Hive) => h.status === 'inactive').length,
+        quarantine_hives: hives.filter((h: Hive) => h.status === 'quarantine').length,
+        lost_hives: hives.filter((h: Hive) => h.status === 'lost').length,
         needs_attention: 0,
         needs_inspection: 0,
-        pending_tasks: tasks.filter(t => !t.completed).length,
-        high_priority_tasks: tasks.filter(t => t.priority === 'high' && !t.completed).length,
+        pending_tasks: tasks.filter((t: Task) => !t.completed).length,
+        high_priority_tasks: tasks.filter((t: Task) => t.priority === 'high' && !t.completed).length,
         hives_by_apiary: [],
         recent_inspections: [],
       };
