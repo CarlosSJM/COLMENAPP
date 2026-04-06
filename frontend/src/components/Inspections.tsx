@@ -9,10 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "./ui/badge";
 import { Checkbox } from "./ui/checkbox";
 import { Plus, Eye, Bug, ThermometerSun, Weight, Activity, Heart, Trash2 } from "lucide-react";
-import { api } from "../services/api";
+import { offlineApi } from "../services/offlineStore";
 import { adaptInspections } from "../services/adapters";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
+import { useAuth } from "../contexts/AuthContext";
 
 export function Inspections() {
   const [inspections, setInspections] = useState<any[]>([]);
@@ -22,9 +23,11 @@ export function Inspections() {
   const [deletingInspection, setDeletingInspection] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const { refreshPendingCount } = useAuth();
+
   const loadData = () => {
-    api.getInspections().then(adaptInspections).then(setInspections).catch(() => toast.error("Error al cargar inspecciones"));
-    api.getHives().then(setHives).catch(() => {});
+    offlineApi.getInspections().then(adaptInspections).then(setInspections).catch(() => toast.error("Error al cargar inspecciones"));
+    offlineApi.getHives().then(setHives).catch(() => {});
   };
 
   useEffect(() => { loadData(); }, []);
@@ -97,23 +100,24 @@ export function Inspections() {
     const diseases = formData.get("diseases") ? (formData.get("diseases") as string).split(",").map(d => d.trim()).filter(Boolean) : [];
 
     try {
-      await api.createInspection({
-        hive_id: formData.get("hive_id"),
-        date: formData.get("date"),
+      const { offline } = await offlineApi.createInspection({
+        hive_id: formData.get("hive_id") as string,
+        date: formData.get("date") as string,
         queen_seen: formData.get("queen_seen") === "on",
-        brood_pattern: formData.get("brood_pattern"),
-        temperament: formData.get("temperament"),
+        brood_pattern: formData.get("brood_pattern") as string,
+        temperament: formData.get("temperament") as string,
         weight: parseFloat(formData.get("weight") as string),
         varroa_count: parseInt(formData.get("varroa_count") as string),
-        activity_level: formData.get("activity_level"),
-        health_status: formData.get("health_status"),
+        activity_level: formData.get("activity_level") as string,
+        health_status: formData.get("health_status") as string,
         diseases,
         treatment_applied: treatmentApplied,
-        treatment_product: formData.get("treatment_product") || undefined,
-        treatment_dose: formData.get("treatment_dose") || undefined,
-        notes: formData.get("notes"),
+        treatment_product: (formData.get("treatment_product") as string) || undefined,
+        treatment_dose: (formData.get("treatment_dose") as string) || undefined,
+        notes: formData.get("notes") as string,
       });
-      toast.success("Inspección registrada exitosamente");
+      toast.success(offline ? "Inspección guardada localmente. Se sincronizará al recuperar conexión." : "Inspección registrada exitosamente");
+      await refreshPendingCount();
       setIsAddDialogOpen(false);
       setTreatmentApplied(false);
       loadData();
@@ -124,8 +128,9 @@ export function Inspections() {
     if (!deletingInspection) return;
     setIsDeleting(true);
     try {
-      await api.deleteInspection(deletingInspection.id);
-      toast.success("Inspección eliminada");
+      const { offline } = await offlineApi.deleteInspection(deletingInspection.id);
+      toast.success(offline ? "Eliminación guardada localmente." : "Inspección eliminada");
+      await refreshPendingCount();
       setDeletingInspection(null);
       loadData();
     } catch { toast.error("Error al eliminar inspección"); }

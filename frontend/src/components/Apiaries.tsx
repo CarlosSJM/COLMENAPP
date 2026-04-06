@@ -8,9 +8,10 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Badge } from "./ui/badge";
 import { Plus, MapPin, Hexagon, Pencil, Trash2 } from "lucide-react";
-import { api } from "../services/api";
+import { offlineApi } from "../services/offlineStore";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
+import { useAuth } from "../contexts/AuthContext";
 import type { Apiary } from "../types";
 
 export function Apiaries() {
@@ -21,9 +22,10 @@ export function Apiaries() {
   const [deletingApiary, setDeletingApiary] = useState<Apiary | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
+  const { refreshPendingCount } = useAuth();
 
   const loadApiaries = () => {
-    api.getApiaries()
+    offlineApi.getApiaries()
       .then(setApiaries)
       .catch(() => toast.error("Error al cargar apiarios"))
       .finally(() => setLoading(false));
@@ -46,9 +48,10 @@ export function Apiaries() {
   const handleAddApiary = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await api.createApiary(extractFormData(new FormData(e.currentTarget)));
-      toast.success("Apiario agregado exitosamente");
+      const { offline } = await offlineApi.createApiary(extractFormData(new FormData(e.currentTarget)));
+      toast.success(offline ? "Apiario guardado localmente. Se sincronizará al recuperar conexión." : "Apiario agregado exitosamente");
       setIsAddDialogOpen(false);
+      await refreshPendingCount();
       loadApiaries();
     } catch { toast.error("Error al crear apiario"); }
   };
@@ -57,9 +60,10 @@ export function Apiaries() {
     e.preventDefault();
     if (!editingApiary) return;
     try {
-      await api.updateApiary(editingApiary.id, extractFormData(new FormData(e.currentTarget)));
-      toast.success("Apiario actualizado exitosamente");
+      const { offline } = await offlineApi.updateApiary(editingApiary.id, extractFormData(new FormData(e.currentTarget)));
+      toast.success(offline ? "Cambios guardados localmente. Se sincronizarán al recuperar conexión." : "Apiario actualizado exitosamente");
       setEditingApiary(null);
+      await refreshPendingCount();
       loadApiaries();
     } catch { toast.error("Error al actualizar apiario"); }
   };
@@ -68,9 +72,10 @@ export function Apiaries() {
     if (!deletingApiary) return;
     setIsDeleting(true);
     try {
-      await api.deleteApiary(deletingApiary.id);
-      toast.success("Apiario eliminado");
+      const { offline } = await offlineApi.deleteApiary(deletingApiary.id);
+      toast.success(offline ? "Eliminación guardada localmente. Se sincronizará al recuperar conexión." : "Apiario eliminado");
       setDeletingApiary(null);
+      await refreshPendingCount();
       loadApiaries();
     } catch { toast.error("Error al eliminar apiario"); }
     finally { setIsDeleting(false); }

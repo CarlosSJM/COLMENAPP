@@ -9,10 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "./ui/badge";
 import { Checkbox } from "./ui/checkbox";
 import { Plus, Calendar, AlertCircle, CheckCircle2, Circle, Pencil, Trash2 } from "lucide-react";
-import { api } from "../services/api";
+import { offlineApi } from "../services/offlineStore";
 import { adaptTasks } from "../services/adapters";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
+import { useAuth } from "../contexts/AuthContext";
 
 export function Tasks() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -23,9 +24,11 @@ export function Tasks() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
 
+  const { refreshPendingCount } = useAuth();
+
   const loadData = () => {
-    api.getTasks().then(adaptTasks).then(setTasks).catch(() => toast.error("Error al cargar tareas"));
-    api.getHives().then(setHives).catch(() => {});
+    offlineApi.getTasks().then(adaptTasks).then(setTasks).catch(() => toast.error("Error al cargar tareas"));
+    offlineApi.getHives().then(setHives).catch(() => {});
   };
 
   useEffect(() => { loadData(); }, []);
@@ -64,10 +67,15 @@ export function Tasks() {
 
   const handleToggleTask = async (taskId: string) => {
     try {
-      await api.toggleTask(taskId);
+      const { offline } = await offlineApi.toggleTask(taskId);
       loadData();
       const task = tasks.find((t) => t.id === taskId);
-      toast.success(task?.completed ? "Tarea marcada como pendiente" : "Tarea completada");
+      if (offline) {
+        toast.success("Cambio guardado localmente. Se sincronizará al recuperar conexión.");
+      } else {
+        toast.success(task?.completed ? "Tarea marcada como pendiente" : "Tarea completada");
+      }
+      await refreshPendingCount();
     } catch { toast.error("Error al actualizar tarea"); }
   };
 
@@ -77,15 +85,16 @@ export function Tasks() {
     const hiveId = formData.get("hive_id") as string;
 
     try {
-      await api.createTask({
-        title: formData.get("title"),
-        description: formData.get("description") || undefined,
-        due_date: formData.get("due_date"),
-        priority: formData.get("priority"),
+      const { offline } = await offlineApi.createTask({
+        title: formData.get("title") as string,
+        description: (formData.get("description") as string) || undefined,
+        due_date: formData.get("due_date") as string,
+        priority: formData.get("priority") as string,
         hive_id: hiveId && hiveId !== "none" ? hiveId : undefined,
       });
-      toast.success("Tarea agregada exitosamente");
+      toast.success(offline ? "Tarea guardada localmente. Se sincronizará al recuperar conexión." : "Tarea agregada exitosamente");
       setIsAddDialogOpen(false);
+      await refreshPendingCount();
       loadData();
     } catch { toast.error("Error al crear tarea"); }
   };
@@ -96,15 +105,16 @@ export function Tasks() {
     const formData = new FormData(e.currentTarget);
     const hiveId = formData.get("hive_id") as string;
     try {
-      await api.updateTask(editingTask.id, {
-        title: formData.get("title"),
-        description: formData.get("description") || undefined,
-        due_date: formData.get("due_date"),
-        priority: formData.get("priority"),
+      const { offline } = await offlineApi.updateTask(editingTask.id, {
+        title: formData.get("title") as string,
+        description: (formData.get("description") as string) || undefined,
+        due_date: formData.get("due_date") as string,
+        priority: formData.get("priority") as string,
         hive_id: hiveId && hiveId !== "none" ? hiveId : undefined,
       });
-      toast.success("Tarea actualizada exitosamente");
+      toast.success(offline ? "Cambios guardados localmente. Se sincronizarán al recuperar conexión." : "Tarea actualizada exitosamente");
       setEditingTask(null);
+      await refreshPendingCount();
       loadData();
     } catch { toast.error("Error al actualizar tarea"); }
   };
@@ -113,9 +123,10 @@ export function Tasks() {
     if (!deletingTask) return;
     setIsDeleting(true);
     try {
-      await api.deleteTask(deletingTask.id);
-      toast.success("Tarea eliminada");
+      const { offline } = await offlineApi.deleteTask(deletingTask.id);
+      toast.success(offline ? "Eliminación guardada localmente." : "Tarea eliminada");
       setDeletingTask(null);
+      await refreshPendingCount();
       loadData();
     } catch { toast.error("Error al eliminar tarea"); }
     finally { setIsDeleting(false); }

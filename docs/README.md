@@ -78,8 +78,8 @@ docs/
 | Tests unitarios backend (24 tests) | Completado | Marzo 2026 |
 | Revision de seguridad (3 fixes) | Completado | Marzo 2026 |
 | Actualizacion README.md Entrega 2 | Completado | Marzo 2026 |
-| Offline Sync (Dexie.js + Queue) | Pendiente (fase futura) | - |
-| Tests frontend | Pendiente (fase futura) | - |
+| Offline Sync (Dexie.js + Queue) | **Completado** | Abril 2026 |
+| Tests frontend (56 tests, 5 suites) | **Completado** | Abril 2026 |
 | **Mejoras post-correccion (feedback A-)** | **En progreso** | **Abril 2026** |
 
 ## Plan de Accion
@@ -172,10 +172,10 @@ Derivadas del feedback de la correccion. Detalle en `docs/improvements/README.md
 
 | Tarea | Esfuerzo | Impacto | Estado |
 |-------|----------|---------|--------|
-| T1: Security hardening (helmet + throttler) | 1-2h | Medio | Pendiente |
-| T2: npm audit | 30min-1h | Bajo-Medio | Pendiente |
-| T3: Testing frontend (Vitest + RTL) | 4-6h | Alto | Pendiente |
-| T4: Offline-first (Dexie.js + sync) | 8-12h | Muy alto | Pendiente |
+| T1: Security hardening (helmet + throttler) | 1-2h | Medio | **Completada** |
+| T2: npm audit | 30min-1h | Bajo-Medio | **Completada** |
+| T3: Testing frontend (Vitest + RTL) | 4-6h | Alto | **Completada** |
+| T4: Offline-first (Dexie.js + sync) | 8-12h | Muy alto | **Completada** |
 | T5: Tipado estricto (eliminar any) | 3-5h | Medio | Pendiente |
 | T6: Coherencia documentacion | 1-2h | Bajo | Pendiente |
 

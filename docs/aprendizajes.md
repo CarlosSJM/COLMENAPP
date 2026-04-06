@@ -393,7 +393,25 @@ Los tests de `adapters.ts` (18 tests) y `api.ts` (14 tests) cubren la logica que
 
 **Leccion:** Priorizar tests de logica pura (adapters, utils, services) sobre tests de componentes UI. Un adapter roto afecta a toda la app; un boton mal renderizado es visible al instante.
 
-### 10.6 Las vulnerabilidades en devDependencies no afectan produccion
+### 10.6 El wrapper offlineApi es mejor que modificar api.ts directamente
+
+Para implementar offline-first, se creo `offlineStore.ts` como wrapper sobre `api.ts` en vez de modificar el servicio API original. Esto mantiene `api.ts` limpio (solo HTTP), separando la logica offline (IndexedDB + cola) en una capa dedicada. Los componentes importan `offlineApi` en vez de `api`.
+
+**Leccion:** Cuando se anade una capa de abstraccion (cache, offline, retry), hacerlo como wrapper externo sobre el servicio existente, no como modificacion inline. Esto permite testear cada capa por separado y revertir facilmente si algo falla.
+
+### 10.7 Dexie.js simplifica IndexedDB pero las operaciones update necesitan cast
+
+Dexie tipifica estrictamente los `update()` contra el schema de la entidad. Los datos de formularios llegan como `Record<string, unknown>`, que no es compatible. Un `as any` en los update es aceptable porque los datos ya estan validados por el backend en modo online.
+
+**Leccion:** Cuando se integra una libreria con tipos estrictos (Dexie, Prisma) con datos dinamicos (formularios), aceptar casts puntuales en la frontera de datos en vez de crear tipos intermedios innecesarios.
+
+### 10.8 La sincronizacion automatica on-reconnect es la UX minima viable
+
+El evento `window.addEventListener('online', syncNow)` procesa la cola automaticamente al recuperar conexion. El usuario no necesita hacer nada. El toast "X cambio(s) sincronizado(s)" confirma que funciono.
+
+**Leccion:** La sincronizacion automatica al detectar conexion es la pieza mas critica del offline-first. Sin ella, el usuario tendria que recordar sincronizar manualmente, lo que nadie hace. El boton manual es complementario, no primario.
+
+### 10.9 Las vulnerabilidades en devDependencies no afectan produccion
 
 De las 10 vulnerabilidades restantes en el backend, 6 estan en devDependencies (@nestjs/cli, jest, eslint). Estas herramientas no se ejecutan en produccion ni se incluyen en el bundle.
 
@@ -428,7 +446,7 @@ De las 10 vulnerabilidades restantes en el backend, 6 estan en devDependencies (
 | Problemas de deploy resueltos | 9 (6 Render + 3 Vercel) |
 | Deploy coste | 0€/mes |
 | Verificacion post-deploy | 11 checks pasados |
-| Aprendizajes documentados | 52 |
+| Aprendizajes documentados | 55 |
 
 ---
 

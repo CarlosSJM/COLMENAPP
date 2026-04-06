@@ -7,10 +7,11 @@ import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Plus, Droplet, Package, Sparkles, Trash2 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { api } from "../services/api";
+import { offlineApi } from "../services/offlineStore";
 import { adaptProductions } from "../services/adapters";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
+import { useAuth } from "../contexts/AuthContext";
 
 export function Production() {
   const [productions, setProductions] = useState<any[]>([]);
@@ -19,9 +20,11 @@ export function Production() {
   const [deletingProduction, setDeletingProduction] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const { refreshPendingCount } = useAuth();
+
   const loadData = () => {
-    api.getProductions().then(adaptProductions).then(setProductions).catch(() => toast.error("Error al cargar producción"));
-    api.getHives().then(setHives).catch(() => {});
+    offlineApi.getProductions().then(adaptProductions).then(setProductions).catch(() => toast.error("Error al cargar producción"));
+    offlineApi.getHives().then(setHives).catch(() => {});
   };
 
   useEffect(() => { loadData(); }, []);
@@ -58,14 +61,15 @@ export function Production() {
     const formData = new FormData(e.currentTarget);
 
     try {
-      await api.createProduction({
-        hive_id: formData.get("hive_id"),
-        date: formData.get("date"),
+      const { offline } = await offlineApi.createProduction({
+        hive_id: formData.get("hive_id") as string,
+        date: formData.get("date") as string,
         honey_kg: parseFloat(formData.get("honey_kg") as string),
         wax_kg: parseFloat(formData.get("wax_kg") as string),
         propolis_g: parseFloat(formData.get("propolis_g") as string),
       });
-      toast.success("Producción registrada exitosamente");
+      toast.success(offline ? "Producción guardada localmente. Se sincronizará al recuperar conexión." : "Producción registrada exitosamente");
+      await refreshPendingCount();
       setIsAddDialogOpen(false);
       loadData();
     } catch { toast.error("Error al registrar producción"); }
@@ -75,8 +79,9 @@ export function Production() {
     if (!deletingProduction) return;
     setIsDeleting(true);
     try {
-      await api.deleteProduction(deletingProduction.id);
-      toast.success("Registro eliminado");
+      const { offline } = await offlineApi.deleteProduction(deletingProduction.id);
+      toast.success(offline ? "Eliminación guardada localmente." : "Registro eliminado");
+      await refreshPendingCount();
       setDeletingProduction(null);
       loadData();
     } catch { toast.error("Error al eliminar registro"); }

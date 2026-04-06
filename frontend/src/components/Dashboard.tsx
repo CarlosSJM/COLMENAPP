@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Hexagon, AlertTriangle, ClipboardList, CheckSquare } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { api } from "../services/api";
+import { offlineApi } from "../services/offlineStore";
 import { toast } from "sonner";
 import type { DashboardStats } from "../types";
 
@@ -11,7 +11,7 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.getDashboardStats()
+    offlineApi.getDashboardStats()
       .then(setStats)
       .catch(() => toast.error("Error al cargar dashboard"))
       .finally(() => setLoading(false));

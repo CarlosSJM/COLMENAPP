@@ -10,11 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "./ui/badge";
 import { Plus, Users, Calendar, AlertCircle, QrCode, ScanLine, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { api } from "../services/api";
+import { offlineApi } from "../services/offlineStore";
 import { adaptHives } from "../services/adapters";
 import { QRModal } from "./QRModal";
 import { QRScanner } from "./QRScanner";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { toast } from "sonner";
+import { useAuth } from "../contexts/AuthContext";
 
 export function Hives() {
   const { apiaryId } = useParams();
@@ -38,12 +40,14 @@ export function Hives() {
     apiaryName: "",
   });
 
+  const { refreshPendingCount } = useAuth();
+
   const loadData = () => {
     const hivesPromise = apiaryId
-      ? api.getApiaryHives(apiaryId).then(adaptHives)
-      : api.getHives().then(adaptHives);
+      ? offlineApi.getApiaryHives(apiaryId).then(adaptHives)
+      : offlineApi.getHives().then(adaptHives);
     hivesPromise.then(setHives).catch(() => toast.error("Error al cargar colmenas"));
-    api.getApiaries().then(setApiaries).catch(() => {});
+    offlineApi.getApiaries().then(setApiaries).catch(() => {});
   };
 
   useEffect(() => { loadData(); }, [apiaryId]);
@@ -90,18 +94,19 @@ export function Hives() {
     const selectedApiaryId = apiaryId || (formData.get("apiary_id") as string);
 
     try {
-      await api.createHive({
-        code: formData.get("code"),
-        name: formData.get("name"),
+      const { offline } = await offlineApi.createHive({
+        code: formData.get("code") as string,
+        name: formData.get("name") as string,
         apiary_id: selectedApiaryId,
-        status: formData.get("status"),
-        queen_origin: formData.get("queen_origin"),
+        status: formData.get("status") as string,
+        queen_origin: formData.get("queen_origin") as string,
         population: parseInt(formData.get("population") as string),
         frames: parseInt(formData.get("frames") as string),
-        installed_at: formData.get("installed_at"),
-        notes: formData.get("notes") || undefined,
+        installed_at: formData.get("installed_at") as string,
+        notes: (formData.get("notes") as string) || undefined,
       });
-      toast.success("Colmena agregada exitosamente");
+      toast.success(offline ? "Colmena guardada localmente. Se sincronizará al recuperar conexión." : "Colmena agregada exitosamente");
+      await refreshPendingCount();
       setIsAddDialogOpen(false);
       loadData();
     } catch { toast.error("Error al crear colmena"); }
@@ -140,17 +145,18 @@ export function Hives() {
     if (!editingHive) return;
     const formData = new FormData(e.currentTarget);
     try {
-      await api.updateHive(editingHive.id, {
-        code: formData.get("code"),
-        name: formData.get("name"),
-        status: formData.get("status"),
-        queen_origin: formData.get("queen_origin"),
+      const { offline } = await offlineApi.updateHive(editingHive.id, {
+        code: formData.get("code") as string,
+        name: formData.get("name") as string,
+        status: formData.get("status") as string,
+        queen_origin: formData.get("queen_origin") as string,
         population: parseInt(formData.get("population") as string),
         frames: parseInt(formData.get("frames") as string),
-        installed_at: formData.get("installed_at"),
-        notes: formData.get("notes") || undefined,
+        installed_at: formData.get("installed_at") as string,
+        notes: (formData.get("notes") as string) || undefined,
       });
-      toast.success("Colmena actualizada exitosamente");
+      toast.success(offline ? "Cambios guardados localmente. Se sincronizarán al recuperar conexión." : "Colmena actualizada exitosamente");
+      await refreshPendingCount();
       setEditingHive(null);
       setSelectedHive(null);
       loadData();
@@ -161,8 +167,9 @@ export function Hives() {
     if (!deletingHive) return;
     setIsDeleting(true);
     try {
-      await api.deleteHive(deletingHive.id);
-      toast.success("Colmena eliminada");
+      const { offline } = await offlineApi.deleteHive(deletingHive.id);
+      toast.success(offline ? "Eliminación guardada localmente." : "Colmena eliminada");
+      await refreshPendingCount();
       setDeletingHive(null);
       setSelectedHive(null);
       loadData();

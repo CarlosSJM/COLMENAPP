@@ -1,7 +1,7 @@
 # Feature: Offline / Sync / PWA
 
 ## Descripcion
-COLMENAPP funciona como PWA (Progressive Web App) instalable en movil con soporte offline basico. Los assets se cachean localmente y las respuestas API tienen fallback cache.
+COLMENAPP funciona como PWA (Progressive Web App) instalable en movil con soporte offline completo. Los datos se persisten en IndexedDB (Dexie.js), las mutaciones offline se encolan y se sincronizan automaticamente al recuperar conexion.
 
 ## Estado de Implementacion
 
@@ -10,9 +10,14 @@ COLMENAPP funciona como PWA (Progressive Web App) instalable en movil con soport
 | PWA Manifest | Implementado | App instalable, standalone, iconos, tema amber |
 | Service Worker | Implementado | Cache de assets + fallback API |
 | Indicadores Online/Offline | Implementado | Badge en header via AuthContext |
-| Dexie.js (IndexedDB) | Pendiente | Storage local de entidades |
-| Sync Queue | Pendiente | Cola de operaciones pendientes |
-| Resolucion conflictos | Pendiente | Modal mantener local / usar servidor |
+| Dexie.js (IndexedDB) | **Implementado** | Storage local de 5 entidades + syncQueue |
+| Sync Queue | **Implementado** | Cola FIFO con retries (max 3), auto-sync on reconnect |
+| Offline CRUD | **Implementado** | Crear/editar/eliminar offline con feedback toast |
+| Auto-sync | **Implementado** | Sincroniza automaticamente al detectar evento 'online' |
+| Badge pendientes | **Implementado** | Cuenta real de operaciones pendientes en header |
+| Boton sync manual | **Implementado** | Icono RefreshCw en badge de pendientes |
+| Dashboard offline | **Implementado** | Stats basicas desde datos cacheados en IndexedDB |
+| Resolucion conflictos | Simplificada | Last-write-wins (sin modal de conflictos) |
 
 ## PWA - Progressive Web App
 
@@ -75,10 +80,8 @@ Fetch → Intercepta requests y aplica estrategia segun tipo
 - Si se pierde conexion, las paginas ya visitadas siguen funcionando con datos cacheados
 - Las respuestas GET de la API se cachean como fallback
 
-### Limitaciones actuales
-- Las mutaciones (crear, editar, eliminar) requieren conexion
-- No hay cola de operaciones offline (requiere Dexie.js, fase futura)
-- El cache de API es basico (no sincroniza automaticamente)
+### Nota
+El SW sigue activo para cache de assets. La persistencia de datos ahora la maneja Dexie.js (IndexedDB) a traves de `offlineStore.ts`.
 
 ## Indicadores UI en Header
 
@@ -119,18 +122,39 @@ useEffect(() => {
 | Sincronizado | "Sincronizado correctamente" |
 | Error | Mensaje de error + opcion reintentar |
 
-## Fase Futura: Dexie.js + Sync Queue
+## Arquitectura Offline-First (Implementado Abril 2026)
 
-### Pendiente de implementar
-1. **Dexie.js**: Schemas IndexedDB para cada entidad (apiaries, hives, inspections, production, tasks)
-2. **Sync Queue**: Cola de operaciones pendientes con timestamps
-3. **Resolucion de conflictos**: Modal "Mantener local" / "Usar servidor"
-4. **Estrategia**: Last-write-wins configurable
+### Archivos
 
-### Flujo futuro
+| Archivo | Descripcion |
+|---------|-------------|
+| `services/db.ts` | Dexie DB con 6 tablas (5 entidades + syncQueue) |
+| `services/offlineStore.ts` | Wrapper de API: online → API + cache; offline → IndexedDB + enqueue |
+| `services/syncQueue.ts` | Cola FIFO: enqueue, process, retry (max 3), clear failed |
+| `services/uuid.ts` | UUID v4 para IDs temporales offline |
+| `contexts/AuthContext.tsx` | pendingSync real, auto-sync on reconnect, syncNow() |
+
+### Flujo
 ```
-1. Usuario crea/edita → Guardar en IndexedDB + encolar operacion
-2. Cuando hay conexion → Enviar cola al backend en orden
-3. Servidor responde → Actualizar IndexedDB + limpiar cola
-4. Si conflicto → Mostrar modal de resolucion
+API call (usuario crea/edita/elimina)
+    |
+    ├── Online? ──→ Enviar al backend ──→ OK ──→ Guardar en IndexedDB
+    |                                     └──→ Error ──→ Toast error
+    |
+    └── Offline? ──→ Guardar en IndexedDB + Encolar en syncQueue
+                     └──→ Toast "Guardado localmente"
+                     └──→ Badge pendientes +1
+
+Evento 'online':
+    └──→ processQueue() automatico (FIFO)
+         ├── OK ──→ Eliminar de cola, toast "sincronizado"
+         └── Error ──→ Retry (max 3) o marcar fallido
 ```
+
+### Estrategia de conflictos
+Last-write-wins simplificada: la operacion del cliente sobreescribe el servidor. No hay modal de resolucion manual.
+
+### Futuro
+- Modal "Mantener local" / "Usar servidor" para conflictos detectados
+- Indicador visual en items no sincronizados (icono en cards)
+- Background sync via Service Worker

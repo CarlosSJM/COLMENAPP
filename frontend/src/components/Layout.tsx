@@ -1,10 +1,11 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { Home, Hexagon, ClipboardList, Droplet, CheckSquare, MapPin, CloudOff, Cloud } from "lucide-react";
+import { Home, Hexagon, ClipboardList, Droplet, CheckSquare, MapPin, CloudOff, Cloud, RefreshCw } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import { useAuth } from "../contexts/AuthContext";
 
 export function Layout() {
-  const { isOnline, pendingSync } = useAuth();
+  const { isOnline, pendingSync, isSyncing, syncNow } = useAuth();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-50">
@@ -26,8 +27,25 @@ export function Layout() {
             <div className="flex items-center gap-2">
               {/* Sync Status */}
               {pendingSync > 0 && (
-                <Badge variant="outline" className="border-orange-300 text-orange-700 bg-orange-50">
+                <Badge variant="outline" className="border-orange-300 text-orange-700 bg-orange-50 flex items-center gap-1">
                   {pendingSync} pendientes
+                  {isOnline && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="size-5 p-0 ml-1"
+                      onClick={syncNow}
+                      disabled={isSyncing}
+                    >
+                      <RefreshCw className={`size-3 ${isSyncing ? 'animate-spin' : ''}`} />
+                    </Button>
+                  )}
+                </Badge>
+              )}
+              {isSyncing && (
+                <Badge variant="outline" className="border-blue-300 text-blue-700 bg-blue-50">
+                  <RefreshCw className="size-3 mr-1 animate-spin" />
+                  Sincronizando...
                 </Badge>
               )}
 

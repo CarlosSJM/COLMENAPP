@@ -17,7 +17,7 @@ El feedback destaca:
 | T1 | [Security hardening](./T1-security-hardening.md) | 1-2h | Medio | **Completada** |
 | T2 | [npm audit](./T2-npm-audit.md) | 30min-1h | Bajo-Medio | **Completada** |
 | T3 | [Testing frontend](./T3-testing-frontend.md) | 4-6h | Alto | **Completada** |
-| T4 | [Offline-first completo](./T4-offline-first.md) | 8-12h | **Muy alto** | Pendiente |
+| T4 | [Offline-first completo](./T4-offline-first.md) | 8-12h | **Muy alto** | **Completada** |
 | T5 | [Tipado estricto frontend](./T5-tipado-estricto.md) | 3-5h | Medio | Pendiente |
 | T6 | [Coherencia documentacion](./T6-coherencia-docs.md) | 1-2h | Bajo | Pendiente |
 
