@@ -381,7 +381,19 @@ El rate limit global (100 req/min) protege contra abuso general, pero login y re
 
 **Leccion:** Nunca ejecutar `npm audit fix --force` en un proyecto funcional. Las vulnerabilidades en dependencias transitivas de frameworks core (NestJS, React) son responsabilidad del framework, no del desarrollador. Documentar las vulnerabilidades aceptadas con su justificacion es suficiente.
 
-### 10.4 Las vulnerabilidades en devDependencies no afectan produccion
+### 10.4 Vitest + Testing Library es el stack minimo viable para testing frontend React
+
+Con 5 dependencias (vitest, @testing-library/react, @testing-library/jest-dom, @testing-library/user-event, jsdom) se cubren tests de utilidades puras, servicios con fetch mockeado, componentes con interacciones, y contextos React. La configuracion toma 10 minutos y el primer test se ejecuta en <1 segundo.
+
+**Leccion:** No postponer testing frontend por pereza de configuracion. El setup es trivial y los primeros 50 tests cubren la logica mas critica (adapters, API, autenticacion, componentes reutilizables). Los tests de utilidades puras (enums, adapters) son los de mayor ROI: 0 configuracion de DOM, 0 mocks.
+
+### 10.5 Testear la capa de adaptacion es mas valioso que testear componentes UI
+
+Los tests de `adapters.ts` (18 tests) y `api.ts` (14 tests) cubren la logica que mas bugs produce: transformaciones de datos y comunicacion con el backend. Los tests de componentes UI verifican comportamiento pero dependen de la implementacion del DOM.
+
+**Leccion:** Priorizar tests de logica pura (adapters, utils, services) sobre tests de componentes UI. Un adapter roto afecta a toda la app; un boton mal renderizado es visible al instante.
+
+### 10.6 Las vulnerabilidades en devDependencies no afectan produccion
 
 De las 10 vulnerabilidades restantes en el backend, 6 estan en devDependencies (@nestjs/cli, jest, eslint). Estas herramientas no se ejecutan en produccion ni se incluyen en el bundle.
 
@@ -405,7 +417,8 @@ De las 10 vulnerabilidades restantes en el backend, 6 estan en devDependencies (
 | Entidades con CRUD completo | 5 (Apiarios, Colmenas, Inspecciones, Produccion, Tareas) |
 | Tests e2e backend | 34 (4 suites) |
 | Tests unitarios backend | 24 (4 suites) |
-| Tests totales | 58 |
+| Tests unitarios frontend | 56 (5 suites) |
+| Tests totales | 114 |
 | Fases completadas | 5 de 5 |
 | Vulnerabilidades encontradas/corregidas | 3 |
 | CI/CD | GitHub Actions (tests) + auto-deploy (Vercel/Render) |
@@ -415,7 +428,7 @@ De las 10 vulnerabilidades restantes en el backend, 6 estan en devDependencies (
 | Problemas de deploy resueltos | 9 (6 Render + 3 Vercel) |
 | Deploy coste | 0€/mes |
 | Verificacion post-deploy | 11 checks pasados |
-| Aprendizajes documentados | 50 |
+| Aprendizajes documentados | 52 |
 
 ---
 

@@ -48,6 +48,7 @@ docs/
 ├── testing/                     Testing y seguridad
 │   ├── e2e-backend.md           Tests E2E backend (34 tests, manual de ejecucion)
 │   ├── unit-backend.md          Tests unitarios backend (24 tests, mock Prisma)
+│   ├── unit-frontend.md          Tests unitarios frontend (56 tests, Vitest + Testing Library)
 │   └── security-review.md       Revision de seguridad (checklist, hallazgos, fixes)
 │
 └── aprendizajes.md              Lecciones aprendidas (tecnicas, funcionales, diseno, interaccion IA)

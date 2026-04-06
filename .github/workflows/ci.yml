@@ -59,7 +59,7 @@ jobs:
           JWT_SECRET: test-secret-for-ci
         run: npx jest --config test/jest-e2e.json --forceExit
 
-  frontend-build:
+  frontend-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -75,6 +75,10 @@ jobs:
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test
 
       - name: Build frontend
         working-directory: frontend
