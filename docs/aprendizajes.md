@@ -417,7 +417,13 @@ Al reemplazar `any[]` por tipos estrictos (`Hive[]`, `Inspection[]`), TypeScript
 
 **Leccion:** El tipado estricto no es solo "limpiar codigo". Cada `: any` eliminado es un null-check que TS puede validar. Los campos opcionales del schema (`population?`, `installed_at?`) deben tratarse con `??` o ternarios en la UI.
 
-### 10.10 Las vulnerabilidades en devDependencies no afectan produccion
+### 10.10 La documentacion se desincroniza silenciosamente con cada mejora
+
+Tras implementar 5 mejoras (security, audit, tests, offline, tipado), el README.md raiz tenia 15 inconsistencias: Railway en vez de Render, 58 tests en vez de 114, features listadas como pendientes que ya estaban completadas, y un campo `sync_status` en el modelo de datos que nunca existio en el schema real.
+
+**Leccion:** Despues de cada iteracion de mejoras, hacer una pasada de coherencia documental. Las inconsistencias mas peligrosas son las que parecen correctas a primera vista (ej: "58 tests" era correcto hace 2 semanas). Una checklist simple (README ↔ estado real, tablas ↔ features implementadas, diagramas ↔ infra actual) detecta desajustes en 30 minutos.
+
+### 10.11 Las vulnerabilidades en devDependencies no afectan produccion
 
 De las 10 vulnerabilidades restantes en el backend, 6 estan en devDependencies (@nestjs/cli, jest, eslint). Estas herramientas no se ejecutan en produccion ni se incluyen en el bundle.
 
@@ -452,7 +458,7 @@ De las 10 vulnerabilidades restantes en el backend, 6 estan en devDependencies (
 | Problemas de deploy resueltos | 9 (6 Render + 3 Vercel) |
 | Deploy coste | 0€/mes |
 | Verificacion post-deploy | 11 checks pasados |
-| Aprendizajes documentados | 56 |
+| Aprendizajes documentados | 57 |
 
 ---
 

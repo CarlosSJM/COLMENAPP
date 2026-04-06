@@ -80,7 +80,7 @@ docs/
 | Actualizacion README.md Entrega 2 | Completado | Marzo 2026 |
 | Offline Sync (Dexie.js + Queue) | **Completado** | Abril 2026 |
 | Tests frontend (56 tests, 5 suites) | **Completado** | Abril 2026 |
-| **Mejoras post-correccion (feedback A-)** | **En progreso** | **Abril 2026** |
+| **Mejoras post-correccion (feedback A-, 6/6 completadas)** | **Completado** | **Abril 2026** |
 
 ## Plan de Accion
 
@@ -141,7 +141,7 @@ docs/
 | QR Generation (qrcode.react, local, SVG, imprimible) | Completado |
 | PWA Manifest (instalable, standalone, iconos, tema) | Completado |
 | Service Worker (cache assets, fallback API) | Completado |
-| Dexie.js + Sync Queue | Pospuesto (complejidad alta, fase futura) |
+| Dexie.js + Sync Queue | **Completado** (Abril 2026) |
 
 ### Fase 4b: Edicion y Eliminacion ✅
 
@@ -164,7 +164,7 @@ Detalle completo: `docs/features/crud-edit-delete.md`
 | Tests e2e backend (34 tests, 4 suites) | Completado |
 | Tests unitarios backend (24 tests, 4 suites) | Completado |
 | Revision de seguridad (3 vulnerabilidades corregidas) | Completado |
-| Tests frontend | Pospuesto (tarea futura) |
+| Tests frontend (56 tests, Vitest + RTL) | **Completado** (Abril 2026) |
 
 ### Fase 6: Mejoras Post-Correccion (feedback A-)
 
@@ -177,16 +177,18 @@ Derivadas del feedback de la correccion. Detalle en `docs/improvements/README.md
 | T3: Testing frontend (Vitest + RTL) | 4-6h | Alto | **Completada** |
 | T4: Offline-first (Dexie.js + sync) | 8-12h | Muy alto | **Completada** |
 | T5: Tipado estricto (eliminar any) | 3-5h | Medio | **Completada** |
-| T6: Coherencia documentacion | 1-2h | Bajo | Pendiente |
+| T6: Coherencia documentacion | 1-2h | Bajo | **Completada** |
 
 ### Tareas Futuras (Post-MVP)
 
+Detalle en `docs/features/backlog-futuro.md`.
+
 | Tarea | Prioridad | Descripcion |
 |-------|-----------|-------------|
-| Tests frontend (Vitest + RTL) | Media | Componentes criticos: Dashboard, Hives, Auth |
-| Offline sync completo (Dexie.js) | Media | IndexedDB + cola de operaciones + conflictos |
-| Rate limiting (produccion) | Alta | @nestjs/throttler en auth endpoints |
-| Helmet.js (produccion) | Alta | Headers de seguridad |
+| TK-F001: Perfil de usuario | Alta | Edicion nombre, cambio contrasena/email |
+| TK-F002: Historico por colmena | Media | Timeline inspecciones y tareas |
+| TK-F003: Graficas de produccion | Media | Evolucion temporal con Recharts |
+| TK-F004: Soft delete | Media-Alta | deleted_at en vez de DELETE real |
+| TK-F005: Audit log | Baja | Historial de cambios por entidad |
+| TK-F006: Sistema de logs | Alta | Winston/Pino para errores produccion |
 | Exportacion CSV | Media | Descarga de datos por apiario |
-| Edicion de inspecciones (UI) | Baja | Endpoint PUT ya listo, falta dialog en frontend |
-| Edicion de produccion (UI) | Baja | Endpoint PUT ya listo, falta dialog en frontend |

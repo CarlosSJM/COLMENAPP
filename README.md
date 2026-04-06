@@ -65,7 +65,7 @@ finalproject-CSM        → Entrega final
 | 6 | **Historial** | Visualización cronológica de inspecciones por colmena |
 | 7 | **Modo Offline** | Funciona sin conexión, sync automático al recuperar red |
 | 8 | **Dashboard** | Resumen de colmenas por estado, últimas inspecciones, alertas |
-| 9 | **Exportación CSV** | Descarga de datos por apiario o global |
+| 9 | **Producción y Tareas** | Registro de producción (miel, cera, propóleo) y gestión de tareas con prioridad |
 
 #### Excluido del MVP (Fases futuras)
 
@@ -166,7 +166,7 @@ graph TB
 
     subgraph "Infraestructura"
         VERCEL[Vercel]
-        RAILWAY[Railway]
+        RENDER[Render]
     end
 
     PWA --> SW
@@ -177,8 +177,8 @@ graph TB
     PRISMA --> PG
 
     PWA -.->|Deploy| VERCEL
-    API -.->|Deploy| RAILWAY
-    PG -.->|Hosted| RAILWAY
+    API -.->|Deploy| RENDER
+    PG -.->|Hosted| RENDER
 ```
 
 **Justificación de la arquitectura:**
@@ -189,7 +189,7 @@ graph TB
 | **Offline-first** | Dexie.js + Service Worker para funcionar sin conexión en campo |
 | **Backend propio (NestJS)** | Familiaridad del desarrollador, control total, TypeScript nativo |
 | **PostgreSQL** | Robusto, gratuito, estándar de la industria |
-| **Vercel + Railway** | Costes mínimos (~6€/mes), fácil despliegue, escalable |
+| **Vercel + Render** | Coste cero (free tier), fácil despliegue, auto-deploy desde GitHub |
 
 ### 2.2. Descripción de Componentes Principales
 
@@ -198,12 +198,11 @@ graph TB
 | **Frontend PWA** | React 18 + Vite + TypeScript | Interfaz de usuario, lógica de presentación |
 | **UI Components** | Tailwind CSS + shadcn/ui | Componentes accesibles, diseño responsive |
 | **Offline Storage** | Dexie.js (IndexedDB) | Persistencia local, cola de sincronización |
-| **Service Worker** | vite-plugin-pwa | Caché de assets, funcionamiento offline |
-| **i18n** | react-i18next | Internacionalización (ES inicial, preparado para EN, PT...) |
+| **Service Worker** | Custom sw.js | Caché de assets (cache-first), fallback API (network-first) |
 | **API REST** | NestJS + Express | Endpoints, validación, lógica de negocio |
 | **Autenticación** | Passport.js + JWT + bcrypt | Login, registro, tokens, hash de passwords |
 | **ORM** | Prisma | Acceso a BD, migraciones, type-safety |
-| **Base de datos** | PostgreSQL 14+ | Persistencia de datos, relaciones |
+| **Base de datos** | PostgreSQL 16 | Persistencia de datos, relaciones |
 
 ### 2.3. Descripción de Alto Nivel del Proyecto y Estructura de Ficheros
 
@@ -288,13 +287,13 @@ graph LR
 
     subgraph "Producción"
         VERCEL[Vercel<br/>Frontend]
-        RAILWAY[Railway<br/>Backend + DB]
+        RENDER[Render<br/>Backend + DB]
     end
 
     DEV -->|push| GH
     GH -->|trigger| GHA
     GHA -->|deploy| VERCEL
-    GHA -->|deploy| RAILWAY
+    GHA -->|deploy| RENDER
 ```
 
 **Entornos:**
@@ -302,22 +301,22 @@ graph LR
 | Entorno | Frontend | Backend | Base de Datos |
 |---------|----------|---------|---------------|
 | **Local** | localhost:5173 | localhost:3000 | PostgreSQL local |
-| **Producción** | Vercel (auto) | Railway | Railway PostgreSQL |
+| **Producción** | Vercel (auto) | Render | Render PostgreSQL |
 
 **Proceso de despliegue:**
 
 1. Push a rama `main` → GitHub Actions
 2. Frontend: Build Vite → Deploy Vercel (automático)
-3. Backend: Build NestJS → Deploy Railway (automático)
-4. Migraciones Prisma ejecutadas en Railway
+3. Backend: Build NestJS → Deploy Render (automático)
+4. Migraciones Prisma ejecutadas en Render Build Command
 
 **Costes estimados MVP:**
 
 | Servicio | Coste/mes |
 |----------|-----------|
-| Vercel (Free) | 0€ |
-| Railway (Hobby) | ~5€ |
-| **Total** | **~5€/mes** |
+| Vercel (Hobby) | 0€ |
+| Render (Free) | 0€ |
+| **Total** | **0€/mes** |
 
 ### 2.5. Seguridad
 
@@ -330,20 +329,20 @@ graph LR
 | **Input validation** | class-validator en todos los DTOs, whitelist activo | ✅ Implementado |
 | **CORS** | Restringido a origen del frontend | ✅ Corregido |
 | **SQL Injection** | Prisma ORM, no queries raw | ✅ Verificado |
-| **Rate limiting** | Pendiente (@nestjs/throttler) | ⚠️ Pendiente producción |
-| **Helmet.js** | Pendiente (headers seguridad) | ⚠️ Pendiente producción |
+| **Rate limiting** | @nestjs/throttler: 100 req/min global, 5 req/min en auth | ✅ Implementado |
+| **Helmet.js** | Headers seguridad (XSS, HSTS, clickjacking, sniffing) | ✅ Implementado |
 
 **Revisión de seguridad completada:** 3 vulnerabilidades encontradas y corregidas (ver `docs/testing/security-review.md`)
 
 ### 2.6. Tests
 
-**58 tests implementados y pasando:**
+**114 tests implementados y pasando:**
 
 | Tipo | Tests | Herramienta | Que valida |
 |------|-------|-------------|-----------|
 | **E2E Backend** | 34 | Jest + Supertest | Endpoints reales contra BD PostgreSQL |
 | **Unitarios Backend** | 24 | Jest + Mocks | Lógica de negocio aislada |
-| **Frontend** | - | Pendiente | Pendiente para v2 |
+| **Unitarios Frontend** | 56 | Vitest + Testing Library | Enums, adapters, API, componentes, AuthContext |
 
 **Tests E2E (34):**
 
@@ -363,18 +362,29 @@ graph LR
 | HivesService | 6 | hive_count sync, findByCode |
 | InspectionsService | 5 | last_inspection update, ownership |
 
+**Tests Unitarios Frontend (56):**
+
+| Suite | Tests | Cobertura |
+|-------|-------|-----------|
+| Enums | 12 | Mapeo EN→ES de 7 enums, colores por severidad |
+| Adapters | 18 | Transformación backend→Figma, edge cases null/undefined |
+| API Service | 14 | Fetch mock, headers, auth, CRUD, errores |
+| ConfirmDeleteDialog | 8 | Render, interacciones, loading state |
+| AuthContext | 6 | Login/logout, token, online status |
+
 **Ejecución:**
 ```bash
+# Backend tests (requiere Docker PostgreSQL corriendo)
 cd backend
+npm test                                        # Unitarios (24)
+npm run test:e2e                                # E2E (34)
 
-# Tests e2e (requiere Docker PostgreSQL corriendo)
-npx jest --config test/jest-e2e.json --forceExit
-
-# Tests unitarios (sin BD, solo mocks)
-npx jest src/**/*.service.spec.ts --forceExit
+# Frontend tests
+cd frontend
+npm test                                        # Unitarios (56)
 ```
 
-**Revisión de seguridad:** 3 vulnerabilidades encontradas y corregidas (ver `docs/testing/security-review.md`)
+**Revisión de seguridad:** 3 vulnerabilidades encontradas y corregidas + security hardening post-corrección (ver `docs/testing/security-review.md`)
 
 ---
 
@@ -403,7 +413,6 @@ erDiagram
         text notes
         datetime created_at
         datetime updated_at
-        string sync_status
     }
 
     HIVE {
@@ -416,7 +425,6 @@ erDiagram
         text notes
         datetime created_at
         datetime updated_at
-        string sync_status
     }
 
     INSPECTION {
@@ -433,7 +441,6 @@ erDiagram
         string treatment_dose
         text notes
         datetime created_at
-        string sync_status
     }
 
     PRODUCTION {
@@ -501,7 +508,7 @@ erDiagram
 | notes | TEXT | | Notas adicionales |
 | created_at | TIMESTAMP | NOT NULL | Fecha de creación |
 | updated_at | TIMESTAMP | NOT NULL | Última modificación |
-| sync_status | VARCHAR(20) | DEFAULT 'synced' | Estado sync: pending/synced |
+| hive_count | INTEGER | DEFAULT 0 | Contador de colmenas (denormalizado) |
 
 #### HIVE (Colmena)
 
@@ -516,7 +523,6 @@ erDiagram
 | notes | TEXT | | Notas adicionales |
 | created_at | TIMESTAMP | NOT NULL | Fecha de creación |
 | updated_at | TIMESTAMP | NOT NULL | Última modificación |
-| sync_status | VARCHAR(20) | DEFAULT 'synced' | Estado sync |
 
 #### INSPECTION (Inspección)
 
@@ -535,7 +541,6 @@ erDiagram
 | treatment_dose | VARCHAR(50) | | Dosis aplicada |
 | notes | TEXT | | Notas adicionales |
 | created_at | TIMESTAMP | NOT NULL | Fecha de creación |
-| sync_status | VARCHAR(20) | DEFAULT 'synced' | Estado sync |
 
 ---
 
@@ -809,22 +814,23 @@ arquitectura, modelo de datos, API spec, historias de usuario y tickets de traba
 
 | Tarea | Prioridad | Descripción |
 |-------|-----------|-------------|
-| Tests frontend | Media | Vitest + React Testing Library para componentes críticos |
-| Offline sync (Dexie.js) | Media | IndexedDB + cola de operaciones + resolución de conflictos |
-| Rate limiting | Alta (producción) | @nestjs/throttler en endpoints de auth |
-| Helmet.js | Alta (producción) | Headers de seguridad |
 | Exportación CSV | Media | Descarga de datos por apiario |
-| Edición de inspecciones | Baja | Endpoints PUT ya implementados, falta UI |
-| Edición de producción | Baja | Endpoints PUT ya implementados, falta UI |
+| Perfil de usuario | Alta | Edición nombre, cambio contraseña/email |
+| Histórico por colmena | Media | Timeline de inspecciones y tareas |
+| Gráficas de producción | Media | Evolución temporal con Recharts |
+| Soft delete | Media-Alta | deleted_at en vez de DELETE real |
+| Audit log | Baja | Historial de cambios por entidad |
+| Sistema de logs | Alta | Winston/Pino para errores en producción |
 
 ---
 
 ## Enlaces
 
-- **Documentación del proyecto:** [docs/README.md](docs/README.md) (índice de 21 documentos)
+- **Documentación del proyecto:** [docs/README.md](docs/README.md) (índice de 28+ documentos)
 - **Decisiones de diseño:** [docs/design/DESIGN_DECISIONS.md](docs/design/DESIGN_DECISIONS.md)
-- **Aprendizajes:** [docs/aprendizajes.md](docs/aprendizajes.md) (33 lecciones aprendidas)
-- **Registro de prompts:** [prompts.md](prompts.md) (27 prompts documentados)
+- **Aprendizajes:** [docs/aprendizajes.md](docs/aprendizajes.md) (56 lecciones aprendidas)
+- **Mejoras post-corrección:** [docs/improvements/README.md](docs/improvements/README.md) (6 tareas, 5 completadas)
+- **Registro de prompts:** [prompts.md](prompts.md)
 - **Revisión de seguridad:** [docs/testing/security-review.md](docs/testing/security-review.md)
 - **Spec Kit Backend:** [backend/.specify/memory/](backend/.specify/memory/)
 - **Spec Kit Frontend:** [frontend/.specify/memory/](frontend/.specify/memory/)
