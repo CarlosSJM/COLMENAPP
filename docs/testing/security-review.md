@@ -13,7 +13,8 @@
 | SQL injection | ✅ Seguro | Prisma ORM, no hay queries raw |
 | JWT config | ✅ Seguro | Secret desde .env, expiracion configurable |
 | CORS | ✅ Corregido | Restringido a origen del frontend |
-| Rate limiting | ⚠️ No implementado | Pendiente para produccion |
+| Rate limiting | ✅ Implementado | Global 100 req/min + login/register 5 req/min |
+| Security headers | ✅ Implementado | Helmet.js (XSS, HSTS, clickjacking, sniffing) |
 
 ## Hallazgos y Fixes
 
@@ -82,8 +83,11 @@
 - [x] Restringido a origen del frontend
 - [x] Credentials habilitadas
 
+### Implementado (Abril 2026)
+- [x] Rate limiting global: 100 req/min (@nestjs/throttler con ThrottlerGuard global)
+- [x] Rate limiting en login/register: 5 req/min (@Throttle decorator)
+- [x] Helmet.js: XSS protection, HSTS, content-type sniffing, frameguard (clickjacking)
+
 ### Pendiente para Produccion
-- [ ] Rate limiting en register/login (throttler)
-- [ ] Helmet.js para headers de seguridad
 - [ ] Logging de intentos de acceso fallidos
 - [ ] HTTPS obligatorio

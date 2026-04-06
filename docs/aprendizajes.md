@@ -361,7 +361,35 @@ El deploy "exitoso" en Vercel y Render no significa que la app funciona. Hubo pr
 
 ---
 
-## 9. Metricas del Proyecto
+## 10. Aprendizajes Fase 6 (Mejoras Post-Correccion)
+
+### 10.1 Security hardening es un quick win con alto valor percibido
+
+Instalar helmet y @nestjs/throttler toma menos de 30 minutos pero anade 2 capas de seguridad visibles: headers HTTP y rate limiting. Para un evaluador, ver `X-Content-Type-Options: nosniff` o un 429 Too Many Requests demuestra conciencia de seguridad en produccion.
+
+**Leccion:** Las medidas de seguridad de infraestructura (headers, rate limiting) deben instalarse al inicio del proyecto, no como mejora posterior. Son 5 lineas de codigo con impacto desproporcionado en la percepcion de profesionalidad.
+
+### 10.2 El rate limiting debe ser mas agresivo en endpoints de autenticacion
+
+El rate limit global (100 req/min) protege contra abuso general, pero login y register necesitan limites mucho mas estrictos (5 req/min) para prevenir ataques de fuerza bruta. NestJS Throttler permite override por ruta con `@Throttle()`.
+
+**Leccion:** No aplicar un rate limit uniforme a toda la API. Los endpoints de autenticacion son los principales vectores de ataque y necesitan limites especificos. La configuracion es un decorator por ruta, sin complejidad adicional.
+
+### 10.3 npm audit fix sin --force es la unica opcion segura
+
+`npm audit fix` resuelve vulnerabilidades actualizando dentro del rango de versiones compatible. `npm audit fix --force` puede downgradeear paquetes core (ej: @nestjs/swagger@11 → @2.x) rompiendo todo el proyecto. Las vulnerabilidades restantes son dependencias transitivas de NestJS que se resolveran en futuras releases.
+
+**Leccion:** Nunca ejecutar `npm audit fix --force` en un proyecto funcional. Las vulnerabilidades en dependencias transitivas de frameworks core (NestJS, React) son responsabilidad del framework, no del desarrollador. Documentar las vulnerabilidades aceptadas con su justificacion es suficiente.
+
+### 10.4 Las vulnerabilidades en devDependencies no afectan produccion
+
+De las 10 vulnerabilidades restantes en el backend, 6 estan en devDependencies (@nestjs/cli, jest, eslint). Estas herramientas no se ejecutan en produccion ni se incluyen en el bundle.
+
+**Leccion:** Al evaluar vulnerabilidades, clasificar entre runtime (peligrosas) y dev-only (bajo riesgo). Las de devDeps solo afectan al entorno de desarrollo local.
+
+---
+
+## 11. Metricas del Proyecto
 
 | Metrica | Valor |
 |---------|-------|
@@ -387,7 +415,7 @@ El deploy "exitoso" en Vercel y Render no significa que la app funciona. Hubo pr
 | Problemas de deploy resueltos | 9 (6 Render + 3 Vercel) |
 | Deploy coste | 0€/mes |
 | Verificacion post-deploy | 11 checks pasados |
-| Aprendizajes documentados | 46 |
+| Aprendizajes documentados | 50 |
 
 ---
 

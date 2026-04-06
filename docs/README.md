@@ -36,6 +36,15 @@ docs/
 │   ├── crud-edit-delete.md      Edicion y eliminacion de registros
 │   └── backlog-futuro.md       Tickets futuros (perfil, historicos, soft delete, audit log)
 │
+├── improvements/                Mejoras post-correccion (feedback A-)
+│   ├── README.md                Indice y priorizacion de mejoras
+│   ├── T1-security-hardening.md Helmet + rate limiting
+│   ├── T2-npm-audit.md          Resolver vulnerabilidades npm
+│   ├── T3-testing-frontend.md   Vitest + Testing Library
+│   ├── T4-offline-first.md      Dexie.js + cola de sincronizacion
+│   ├── T5-tipado-estricto.md    Eliminar any del frontend
+│   └── T6-coherencia-docs.md    Alinear documentacion
+│
 ├── testing/                     Testing y seguridad
 │   ├── e2e-backend.md           Tests E2E backend (34 tests, manual de ejecucion)
 │   ├── unit-backend.md          Tests unitarios backend (24 tests, mock Prisma)
@@ -70,6 +79,7 @@ docs/
 | Actualizacion README.md Entrega 2 | Completado | Marzo 2026 |
 | Offline Sync (Dexie.js + Queue) | Pendiente (fase futura) | - |
 | Tests frontend | Pendiente (fase futura) | - |
+| **Mejoras post-correccion (feedback A-)** | **En progreso** | **Abril 2026** |
 
 ## Plan de Accion
 
@@ -154,6 +164,19 @@ Detalle completo: `docs/features/crud-edit-delete.md`
 | Tests unitarios backend (24 tests, 4 suites) | Completado |
 | Revision de seguridad (3 vulnerabilidades corregidas) | Completado |
 | Tests frontend | Pospuesto (tarea futura) |
+
+### Fase 6: Mejoras Post-Correccion (feedback A-)
+
+Derivadas del feedback de la correccion. Detalle en `docs/improvements/README.md`.
+
+| Tarea | Esfuerzo | Impacto | Estado |
+|-------|----------|---------|--------|
+| T1: Security hardening (helmet + throttler) | 1-2h | Medio | Pendiente |
+| T2: npm audit | 30min-1h | Bajo-Medio | Pendiente |
+| T3: Testing frontend (Vitest + RTL) | 4-6h | Alto | Pendiente |
+| T4: Offline-first (Dexie.js + sync) | 8-12h | Muy alto | Pendiente |
+| T5: Tipado estricto (eliminar any) | 3-5h | Medio | Pendiente |
+| T6: Coherencia documentacion | 1-2h | Bajo | Pendiente |
 
 ### Tareas Futuras (Post-MVP)
 
